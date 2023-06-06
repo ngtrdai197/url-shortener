@@ -3,7 +3,6 @@ package api
 import (
 	"database/sql"
 	"encoding/base64"
-	"fmt"
 	"math/big"
 	"net/http"
 	"time"
@@ -56,10 +55,12 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	if err == sql.ErrNoRows {
 		node, err := snowflake.NewNode(97)
 		if err != nil {
-			log.Panic().Msgf("new node error=%v", err)
+			log.Error().Msgf("new node error=%v", err)
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
 		}
-		ID := node.Generate().Int64()
 
+		ID := node.Generate().Int64()
 		arg := db.CreateUrlParams{
 			ID:       ID,
 			ShortUrl: base64.RawURLEncoding.EncodeToString(big.NewInt(int64(ID)).Bytes()),
@@ -82,7 +83,6 @@ func (s *Server) RedirectUrl(ctx *gin.Context) {
 
 		return
 	}
-	fmt.Printf("value %v", req)
 	url, err := s.store.GetUrlByShort(ctx, req.ShortUrl)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
@@ -90,7 +90,6 @@ func (s *Server) RedirectUrl(ctx *gin.Context) {
 		}
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
 	}
-	fmt.Printf("result %v", url)
 
 	http.Redirect(ctx.Writer, ctx.Request, url.LongUrl, http.StatusSeeOther)
 }
