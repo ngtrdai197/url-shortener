@@ -8,7 +8,8 @@ import (
 
 type Querier interface {
 	CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, error)
-	GetUrl(ctx context.Context, shortUrl string) (Url, error)
+	GetUrlByLong(ctx context.Context, longUrl string) (Url, error)
+	GetUrlByShort(ctx context.Context, shortUrl string) (Url, error)
 }
 
 var _ Querier = (*Queries)(nil)

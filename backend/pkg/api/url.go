@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/base64"
 	"fmt"
 	"math/big"
@@ -43,26 +44,34 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-
 		return
 	}
 
-	node, err := snowflake.NewNode(97)
-	if err != nil {
-		log.Panic().Msgf("new node error=%v", err)
+	found, err := s.store.GetUrlByLong(ctx, req.LongUrl)
+	if err == nil {
+		ctx.JSON(http.StatusOK, newUrlResponse(found))
+		return
 	}
-	ID := node.Generate().Int64()
-	fmt.Printf("ID       : %d\n", ID)
 
-	arg := db.CreateUrlParams{
-		ID:       ID,
-		ShortUrl: base64.RawURLEncoding.EncodeToString(big.NewInt(int64(ID)).Bytes()),
-		LongUrl:  req.LongUrl,
+	if err == sql.ErrNoRows {
+		node, err := snowflake.NewNode(97)
+		if err != nil {
+			log.Panic().Msgf("new node error=%v", err)
+		}
+		ID := node.Generate().Int64()
+
+		arg := db.CreateUrlParams{
+			ID:       ID,
+			ShortUrl: base64.RawURLEncoding.EncodeToString(big.NewInt(int64(ID)).Bytes()),
+			LongUrl:  req.LongUrl,
+		}
+		url, _ := s.store.CreateUrl(ctx, arg)
+
+		response := newUrlResponse(url)
+		ctx.JSON(http.StatusOK, response)
+		return
 	}
-	url, _ := s.store.CreateUrl(ctx, arg)
-
-	response := newUrlResponse(url)
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 }
 
 func (s *Server) RedirectUrl(ctx *gin.Context) {
@@ -74,7 +83,7 @@ func (s *Server) RedirectUrl(ctx *gin.Context) {
 		return
 	}
 	fmt.Printf("value %v", req)
-	url, err := s.store.GetUrl(ctx, req.ShortUrl)
+	url, err := s.store.GetUrlByShort(ctx, req.ShortUrl)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			ctx.JSON(http.StatusInternalServerError, errorResponse(pqErr))

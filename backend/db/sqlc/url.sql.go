@@ -31,15 +31,34 @@ func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, erro
 	return i, err
 }
 
-const getUrl = `-- name: GetUrl :one
+const getUrlByLong = `-- name: GetUrlByLong :one
+SELECT id, short_url, long_url, created_at
+FROM url
+WHERE long_url = $1
+LIMIT 1
+`
+
+func (q *Queries) GetUrlByLong(ctx context.Context, longUrl string) (Url, error) {
+	row := q.db.QueryRowContext(ctx, getUrlByLong, longUrl)
+	var i Url
+	err := row.Scan(
+		&i.ID,
+		&i.ShortUrl,
+		&i.LongUrl,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUrlByShort = `-- name: GetUrlByShort :one
 SELECT id, short_url, long_url, created_at
 FROM url
 WHERE short_url = $1
 LIMIT 1
 `
 
-func (q *Queries) GetUrl(ctx context.Context, shortUrl string) (Url, error) {
-	row := q.db.QueryRowContext(ctx, getUrl, shortUrl)
+func (q *Queries) GetUrlByShort(ctx context.Context, shortUrl string) (Url, error) {
+	row := q.db.QueryRowContext(ctx, getUrlByShort, shortUrl)
 	var i Url
 	err := row.Scan(
 		&i.ID,
