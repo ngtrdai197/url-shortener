@@ -80,9 +80,9 @@ func (s *Server) RedirectUrl(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-
 		return
 	}
+
 	url, err := s.store.GetUrlByShort(ctx, req.ShortUrl)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {

@@ -30,9 +30,10 @@ func NewServer(c *config.Config) *Server {
 }
 
 func (s *Server) setupRouter(c *config.Config) {
+	gin.SetMode((gin.ReleaseMode))
 	r := gin.Default()
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
-		log.Printf("endpoint %v %v %v %v\n", httpMethod, absolutePath, handlerName, nuHandlers)
+		log.Printf("endpoint %v %v %v %v", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
 
 	r.GET("/ping", func(c *gin.Context) {
