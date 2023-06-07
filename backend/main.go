@@ -49,7 +49,7 @@ func migration(c *config.Config) {
 
 	if err := m.Up(); err != nil {
 		if err == migrate.ErrNoChange {
-			log.Info().Msg("db schema is already up to date")
+			log.Info().Msg("no migration needs to change")
 		} else {
 			log.Fatal().Msgf("migration up with error=%v", err)
 		}

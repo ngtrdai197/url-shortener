@@ -1,8 +1,13 @@
 include .env
 
 PHONY:
+
 start:
 	go run main.go
+
+live:
+	~/go/bin/air -c .air.toml
+
 migration:
 	migrate create --ext sql --dir db/migrations -seq $(MIGRATION_FILE_NAME)
 
