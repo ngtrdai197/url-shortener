@@ -1,11 +1,15 @@
 import { createContext, useContext } from "react";
+import { IUrl } from "../models/url.interface";
+import { IAuthenticateResponse } from "../models/auth.interface";
 
 interface AppContextState {
-  urls: [];
+  urls: IUrl[];
+  authenticate: IAuthenticateResponse | null;
 }
 
 const AppContext = createContext<AppContextState>({
   urls: [],
+  authenticate: null,
 });
 
 if (!AppContext) {
