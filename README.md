@@ -91,6 +91,20 @@ localhost:8088/r?v=Fx4r2XiGEAA
 
 ## Web app (WIP)
 
+<hr />
+
+## Use docker for testing or development purposes
+
+If you haven't run the command: `cp .env.example .env`, Don't forget to run it:
+
+```bash
+cp .env.example .env
+```
+
+```bash
+docker-compose up --build
+```
+
 ...
 
 ## The project is still in progress (WIP :rocket:)
