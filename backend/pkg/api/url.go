@@ -34,6 +34,22 @@ type urlResponse struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+type getListUrlRequest struct {
+	Limit int `form:"limit"`
+	Page  int `form:"page"`
+}
+
+type paginateData struct {
+	Limit int   `json:"limit"`
+	Page  int   `json:"page"`
+	Total int64 `json:"total"`
+}
+
+type getListUrlResponse struct {
+	Paginate paginateData  `json:"paginate"`
+	Data     []urlResponse `json:"data"`
+}
+
 func newUrlResponse(url db.Url) urlResponse {
 	return urlResponse{
 		Id:          url.ID,
@@ -90,7 +106,47 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 }
 
-func (s *Server) GetListUrl(ctx *gin.Context) {}
+func (s *Server) GetListUrl(ctx *gin.Context) {
+	req := getListUrlRequest{
+		Limit: defaultLimit,
+		Page:  defaultPage,
+	}
+
+	if err := ctx.BindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	urls, err := s.store.GetListURLs(ctx, db.GetListURLsParams{
+		UserID: authPayload.UserID,
+		Limit:  int32(req.Limit),
+		Offset: int32((req.Page - 1) * req.Limit),
+	})
+	if err != nil && err != sql.ErrNoRows {
+		if err == sql.ErrNoRows {
+			urls = []db.Url{}
+		} else {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	}
+
+	totalUrls, err := s.store.GetCountURLs(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, getListUrlResponse{
+		Paginate: paginateData{
+			Limit: req.Limit,
+			Page:  req.Page,
+			Total: totalUrls,
+		},
+		Data: convertDBUrlsToURLResponses(urls),
+	})
+}
 
 func (s *Server) RedirectUrl(ctx *gin.Context) {
 	var req rediectUrlRequest
@@ -109,4 +165,14 @@ func (s *Server) RedirectUrl(ctx *gin.Context) {
 	}
 
 	http.Redirect(ctx.Writer, ctx.Request, url.LongUrl, http.StatusSeeOther)
+}
+
+func convertDBUrlsToURLResponses(dbUrls []db.Url) []urlResponse {
+	urlResponses := make([]urlResponse, len(dbUrls))
+
+	for i, dbUrl := range dbUrls {
+		urlResponses[i] = newUrlResponse(dbUrl)
+	}
+
+	return urlResponses
 }

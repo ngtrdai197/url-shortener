@@ -14,3 +14,15 @@ SELECT *
 FROM urls
 WHERE long_url = $1
 LIMIT 1;
+
+-- name: GetListURLs :many
+SELECT *
+FROM urls
+WHERE user_id = $1
+ORDER BY id DESC
+LIMIT $2
+OFFSET $3;
+
+-- name: GetCountURLs :one
+SELECT COUNT(1)
+FROM urls;

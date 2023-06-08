@@ -42,6 +42,63 @@ func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, erro
 	return i, err
 }
 
+const getCountURLs = `-- name: GetCountURLs :one
+SELECT COUNT(1)
+FROM urls
+`
+
+func (q *Queries) GetCountURLs(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCountURLs)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const getListURLs = `-- name: GetListURLs :many
+SELECT id, short_url, long_url, created_at, user_id, description
+FROM urls
+WHERE user_id = $1
+ORDER BY id DESC
+LIMIT $2
+OFFSET $3
+`
+
+type GetListURLsParams struct {
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]Url, error) {
+	rows, err := q.db.QueryContext(ctx, getListURLs, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Url{}
+	for rows.Next() {
+		var i Url
+		if err := rows.Scan(
+			&i.ID,
+			&i.ShortUrl,
+			&i.LongUrl,
+			&i.CreatedAt,
+			&i.UserID,
+			&i.Description,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUrlByLong = `-- name: GetUrlByLong :one
 SELECT id, short_url, long_url, created_at, user_id, description
 FROM urls
