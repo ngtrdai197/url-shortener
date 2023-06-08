@@ -5,6 +5,32 @@ Build a service for shortening url, idea will generate a unique ID (Twitter snow
 - Backend: Golang (1.20)
 - Frontend: ReactJs (18.2.0)
 
+## Start backend
+
+```bash
+go run main.go
+```
+
+## Run migrations
+
+- Install `golang-migrate`
+
+```bash
+curl -L https://github.com/golang-migrate/migrate/releases/download/$version/migrate.$os-$arch.tar.gz | tar xvz
+```
+
+or for `Macos`
+
+```bash
+brew install golang-migrate
+```
+
+- Apply the migration's changes to the database
+
+```bash
+make migrateup
+```
+
 ## How can I authenticate?
 
 ```bash
