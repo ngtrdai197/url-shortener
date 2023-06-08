@@ -5,11 +5,33 @@ Build a service for shortening url, idea will generate a unique ID (Twitter snow
 - Backend: Golang (1.20)
 - Frontend: ReactJs (18.2.0)
 
+## How can I authenticate?
+
+```bash
+curl --location 'http://localhost:8088/users' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username":"johndoe",
+    "password": "exam_password",
+    "full_name": "John Doe"
+}'
+```
+
+```bash
+curl --location 'http://localhost:8088/users/login' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username": "johndoe",
+    "password": "exam_password"
+}'
+```
+
 ## Generate shortened url
 
 ```bash
 # Create
-curl --location 'http://localhost:8088/url' \
+curl --location 'http://localhost:8088/urls' \
+--header 'authorization: bearer <access_token>' \
 --header 'Content-Type: application/json' \
 --data '{
     "long_url": "https://www.youtube.com/watch?v=vC4dLeqnvAw&ab_channel=SeanStudy"
