@@ -5,13 +5,21 @@ Build a service for shortening url, idea will generate a unique ID (Twitter snow
 - Backend: Golang (1.20)
 - Frontend: ReactJs (18.2.0)
 
-## Start backend
+## Backend
+
+### Create .env file
+
+```bash
+cp .env.example .env
+```
+
+### Start backend
 
 ```bash
 go run main.go
 ```
 
-## Run migrations
+### Run migrations
 
 - Install `golang-migrate`
 
@@ -31,7 +39,7 @@ brew install golang-migrate
 make migrateup
 ```
 
-## How can I authenticate?
+### How can I authenticate?
 
 ```bash
 curl --location 'http://localhost:8088/users' \
@@ -52,7 +60,7 @@ curl --location 'http://localhost:8088/users/login' \
 }'
 ```
 
-## Generate shortened url
+### Generate shortened url
 
 ```bash
 # Create
@@ -78,5 +86,11 @@ curl --location 'http://localhost:8088/urls' \
 # Redirect
 localhost:8088/r?v=Fx4r2XiGEAA
 ```
+
+<hr />
+
+## Web app (WIP)
+
+...
 
 ## The project is still in progress (WIP :rocket:)
