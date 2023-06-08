@@ -17,7 +17,8 @@ import (
 )
 
 type createUrlRequest struct {
-	LongUrl string `json:"long_url" binding:"required"`
+	LongUrl     string `json:"long_url" binding:"required"`
+	Description string `json:"description"`
 }
 
 type rediectUrlRequest struct {
@@ -25,20 +26,22 @@ type rediectUrlRequest struct {
 }
 
 type urlResponse struct {
-	Id        int64     `json:"id"`
-	UserID    int64     `json:"user_id"`
-	ShortUrl  string    `json:"short_url"`
-	LongUrl   string    `json:"long_url"`
-	CreatedAt time.Time `json:"created_at"`
+	Id          int64     `json:"id"`
+	UserID      int64     `json:"user_id"`
+	ShortUrl    string    `json:"short_url"`
+	LongUrl     string    `json:"long_url"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func newUrlResponse(url db.Url) urlResponse {
 	return urlResponse{
-		Id:        url.ID,
-		UserID:    url.UserID,
-		ShortUrl:  url.ShortUrl,
-		LongUrl:   url.LongUrl,
-		CreatedAt: url.CreatedAt,
+		Id:          url.ID,
+		UserID:      url.UserID,
+		ShortUrl:    url.ShortUrl,
+		LongUrl:     url.LongUrl,
+		CreatedAt:   url.CreatedAt,
+		Description: url.Description.String,
 	}
 }
 
@@ -67,10 +70,11 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 		ID := node.Generate().Int64()
 		arg := db.CreateUrlParams{
-			ID:       ID,
-			ShortUrl: base64.RawURLEncoding.EncodeToString(big.NewInt(int64(ID)).Bytes()),
-			LongUrl:  req.LongUrl,
-			UserID:   authPayload.UserID,
+			ID:          ID,
+			ShortUrl:    base64.RawURLEncoding.EncodeToString(big.NewInt(int64(ID)).Bytes()),
+			LongUrl:     req.LongUrl,
+			UserID:      authPayload.UserID,
+			Description: sql.NullString{String: req.Description, Valid: true},
 		}
 		url, err := s.store.CreateUrl(ctx, arg)
 		if err != nil {
@@ -85,6 +89,8 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 }
+
+func (s *Server) GetListUrl(ctx *gin.Context) {}
 
 func (s *Server) RedirectUrl(ctx *gin.Context) {
 	var req rediectUrlRequest

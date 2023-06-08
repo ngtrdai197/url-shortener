@@ -5,19 +5,21 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUrl = `-- name: CreateUrl :one
-INSERT INTO urls (id, user_id, short_url, long_url)
-VALUES ($1, $2, $3, $4)
-RETURNING id, short_url, long_url, created_at, user_id
+INSERT INTO urls (id, user_id, short_url, long_url, description)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, short_url, long_url, created_at, user_id, description
 `
 
 type CreateUrlParams struct {
-	ID       int64  `json:"id"`
-	UserID   int64  `json:"user_id"`
-	ShortUrl string `json:"short_url"`
-	LongUrl  string `json:"long_url"`
+	ID          int64          `json:"id"`
+	UserID      int64          `json:"user_id"`
+	ShortUrl    string         `json:"short_url"`
+	LongUrl     string         `json:"long_url"`
+	Description sql.NullString `json:"description"`
 }
 
 func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, error) {
@@ -26,6 +28,7 @@ func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, erro
 		arg.UserID,
 		arg.ShortUrl,
 		arg.LongUrl,
+		arg.Description,
 	)
 	var i Url
 	err := row.Scan(
@@ -34,12 +37,13 @@ func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, erro
 		&i.LongUrl,
 		&i.CreatedAt,
 		&i.UserID,
+		&i.Description,
 	)
 	return i, err
 }
 
 const getUrlByLong = `-- name: GetUrlByLong :one
-SELECT id, short_url, long_url, created_at, user_id
+SELECT id, short_url, long_url, created_at, user_id, description
 FROM urls
 WHERE long_url = $1
 LIMIT 1
@@ -54,12 +58,13 @@ func (q *Queries) GetUrlByLong(ctx context.Context, longUrl string) (Url, error)
 		&i.LongUrl,
 		&i.CreatedAt,
 		&i.UserID,
+		&i.Description,
 	)
 	return i, err
 }
 
 const getUrlByShort = `-- name: GetUrlByShort :one
-SELECT id, short_url, long_url, created_at, user_id
+SELECT id, short_url, long_url, created_at, user_id, description
 FROM urls
 WHERE short_url = $1
 LIMIT 1
@@ -74,6 +79,7 @@ func (q *Queries) GetUrlByShort(ctx context.Context, shortUrl string) (Url, erro
 		&i.LongUrl,
 		&i.CreatedAt,
 		&i.UserID,
+		&i.Description,
 	)
 	return i, err
 }

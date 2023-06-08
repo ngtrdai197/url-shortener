@@ -3,6 +3,7 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,11 +19,12 @@ type Session struct {
 }
 
 type Url struct {
-	ID        int64     `json:"id"`
-	ShortUrl  string    `json:"short_url"`
-	LongUrl   string    `json:"long_url"`
-	CreatedAt time.Time `json:"created_at"`
-	UserID    int64     `json:"user_id"`
+	ID          int64          `json:"id"`
+	ShortUrl    string         `json:"short_url"`
+	LongUrl     string         `json:"long_url"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UserID      int64          `json:"user_id"`
+	Description sql.NullString `json:"description"`
 }
 
 type User struct {
