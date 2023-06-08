@@ -44,14 +44,12 @@ func loadConfig() *config.Config {
 func migration(c *config.Config) {
 	m, err := migrate.New(c.MigrationUrl, c.DbSource)
 	if err != nil {
-		log.Fatal().Msgf("migrate.New error=%v", err)
+		log.Fatal().Err(err).Msg("cannot create new migrate instance")
 	}
 
-	if err := m.Up(); err != nil {
-		if err == migrate.ErrNoChange {
-			log.Info().Msg("no migration needs to change")
-		} else {
-			log.Fatal().Msgf("migration up with error=%v", err)
-		}
+	if err = m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal().Err(err).Msg("failed to run migrate up")
 	}
+
+	log.Info().Msg("db migrated successfully")
 }

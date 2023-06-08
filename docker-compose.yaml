@@ -1,0 +1,51 @@
+version: "3.9"
+
+# Service for the backend
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./backend/.env:/app/.env
+    depends_on:
+      - postgres_db
+    entrypoint:
+      [
+        "/app/wait-for.sh",
+        "postgres_db:5432",
+        "--",
+        "/app/start.sh"
+      ]
+    command: [ "/app/backend" ]
+
+# Service for the frontend
+  # frontend:
+  #   build:
+  #     context: ./web-app
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ./web-app:/app
+  #   depends_on:
+  #     - backend
+
+# Service for the db
+  postgres_db:
+      image: postgres
+      environment:
+        POSTGRES_DB: url_shorterner
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      ports:
+        - "5432:5432"
+      expose:
+        - "5432"
+      volumes:
+        - ./postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
