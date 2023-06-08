@@ -8,13 +8,15 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/ngtrdai197/url-shorterner/config"
 	db "github.com/ngtrdai197/url-shorterner/db/sqlc"
+	"github.com/ngtrdai197/url-shorterner/pkg/token"
 	"github.com/rs/zerolog/log"
 )
 
 type Server struct {
-	config *config.Config
-	store  db.Store
-	router *gin.Engine
+	config     *config.Config
+	store      db.Store
+	router     *gin.Engine
+	tokenMaker token.Maker
 }
 
 func NewServer(c *config.Config) *Server {
@@ -22,8 +24,14 @@ func NewServer(c *config.Config) *Server {
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot connect db")
 	}
+
+	tokenMaker, err := token.NewPasetoMaker(c.TokenSymmetricKey)
+	if err != nil {
+		log.Fatal().Err(err).Msgf("cannot create token maker: %v", err)
+	}
+
 	store := db.NewStore(conn)
-	server := &Server{config: c, store: store}
+	server := &Server{config: c, store: store, tokenMaker: tokenMaker}
 	server.setupRouter(c)
 
 	return server
@@ -42,8 +50,16 @@ func (s *Server) setupRouter(c *config.Config) {
 		})
 	})
 
-	r.POST("/url", s.CreateUrl)
+	r.POST("/users", s.createUser)
+	r.POST("/users/login", s.loginUser)
+
 	r.GET("/r", s.RedirectUrl)
+
+	authRoutes := r.Group("/")
+	authRoutes.Use(authMiddleware(s.tokenMaker))
+	{
+		authRoutes.POST("/urls", s.CreateUrl)
+	}
 
 	s.router = r
 }

@@ -8,32 +8,39 @@ import (
 )
 
 const createUrl = `-- name: CreateUrl :one
-INSERT INTO url (id, short_url, long_url)
-VALUES ($1, $2, $3)
-RETURNING id, short_url, long_url, created_at
+INSERT INTO urls (id, user_id, short_url, long_url)
+VALUES ($1, $2, $3, $4)
+RETURNING id, short_url, long_url, created_at, user_id
 `
 
 type CreateUrlParams struct {
 	ID       int64  `json:"id"`
+	UserID   int64  `json:"user_id"`
 	ShortUrl string `json:"short_url"`
 	LongUrl  string `json:"long_url"`
 }
 
 func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, error) {
-	row := q.db.QueryRowContext(ctx, createUrl, arg.ID, arg.ShortUrl, arg.LongUrl)
+	row := q.db.QueryRowContext(ctx, createUrl,
+		arg.ID,
+		arg.UserID,
+		arg.ShortUrl,
+		arg.LongUrl,
+	)
 	var i Url
 	err := row.Scan(
 		&i.ID,
 		&i.ShortUrl,
 		&i.LongUrl,
 		&i.CreatedAt,
+		&i.UserID,
 	)
 	return i, err
 }
 
 const getUrlByLong = `-- name: GetUrlByLong :one
-SELECT id, short_url, long_url, created_at
-FROM url
+SELECT id, short_url, long_url, created_at, user_id
+FROM urls
 WHERE long_url = $1
 LIMIT 1
 `
@@ -46,13 +53,14 @@ func (q *Queries) GetUrlByLong(ctx context.Context, longUrl string) (Url, error)
 		&i.ShortUrl,
 		&i.LongUrl,
 		&i.CreatedAt,
+		&i.UserID,
 	)
 	return i, err
 }
 
 const getUrlByShort = `-- name: GetUrlByShort :one
-SELECT id, short_url, long_url, created_at
-FROM url
+SELECT id, short_url, long_url, created_at, user_id
+FROM urls
 WHERE short_url = $1
 LIMIT 1
 `
@@ -65,6 +73,7 @@ func (q *Queries) GetUrlByShort(ctx context.Context, shortUrl string) (Url, erro
 		&i.ShortUrl,
 		&i.LongUrl,
 		&i.CreatedAt,
+		&i.UserID,
 	)
 	return i, err
 }

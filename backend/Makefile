@@ -23,5 +23,8 @@ migratedown:
 migratedown1:
 	migrate -path db/migrations -database "$(DB_SOURCE)" -verbose down 1
 
+migrateforce:
+	migrate -path db/migrations -database "$(DB_SOURCE)" -verbose force $(FORCE_VERSION)
+
 sqlc:
 	sqlc generate

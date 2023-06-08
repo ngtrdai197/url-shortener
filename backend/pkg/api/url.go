@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"math/big"
 	"net/http"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 	db "github.com/ngtrdai197/url-shorterner/db/sqlc"
+	"github.com/ngtrdai197/url-shorterner/pkg/token"
 	"github.com/rs/zerolog/log"
 )
 
@@ -24,6 +26,7 @@ type rediectUrlRequest struct {
 
 type urlResponse struct {
 	Id        int64     `json:"id"`
+	UserID    int64     `json:"user_id"`
 	ShortUrl  string    `json:"short_url"`
 	LongUrl   string    `json:"long_url"`
 	CreatedAt time.Time `json:"created_at"`
@@ -32,6 +35,7 @@ type urlResponse struct {
 func newUrlResponse(url db.Url) urlResponse {
 	return urlResponse{
 		Id:        url.ID,
+		UserID:    url.UserID,
 		ShortUrl:  url.ShortUrl,
 		LongUrl:   url.LongUrl,
 		CreatedAt: url.CreatedAt,
@@ -45,7 +49,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
+	fmt.Printf("request %v", req)
 	found, err := s.store.GetUrlByLong(ctx, req.LongUrl)
 	if err == nil {
 		ctx.JSON(http.StatusOK, newUrlResponse(found))
@@ -60,13 +64,20 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 			return
 		}
 
+		authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 		ID := node.Generate().Int64()
 		arg := db.CreateUrlParams{
 			ID:       ID,
 			ShortUrl: base64.RawURLEncoding.EncodeToString(big.NewInt(int64(ID)).Bytes()),
 			LongUrl:  req.LongUrl,
+			UserID:   authPayload.UserID,
 		}
-		url, _ := s.store.CreateUrl(ctx, arg)
+		url, err := s.store.CreateUrl(ctx, arg)
+		if err != nil {
+			log.Error().Msgf("create url with error=%v", err)
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
 
 		response := newUrlResponse(url)
 		ctx.JSON(http.StatusOK, response)
