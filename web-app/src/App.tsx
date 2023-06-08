@@ -1,10 +1,12 @@
 import "./App.scss";
+import AppContext from "./context/appContext";
+import routes from "./routes";
+import { useRoutes } from "react-router-dom";
 
 function App() {
+  const element = useRoutes(routes);
   return (
-    <>
-      <h1 className="text-red-500 text-center">Url Shorterner</h1>
-    </>
+    <AppContext.Provider value={{ urls: [] }}>{element}</AppContext.Provider>
   );
 }
 
