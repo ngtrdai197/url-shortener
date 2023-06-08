@@ -6,7 +6,9 @@ import { useRoutes } from "react-router-dom";
 function App() {
   const element = useRoutes(routes);
   return (
-    <AppContext.Provider value={{ urls: [] }}>{element}</AppContext.Provider>
+    <AppContext.Provider value={{ urls: [], authenticate: null }}>
+      {element}
+    </AppContext.Provider>
   );
 }
 
