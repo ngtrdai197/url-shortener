@@ -1,13 +1,16 @@
+import { useReducer } from "react";
 import "./App.scss";
-import AppContext from "./context/appContext";
+import AppContext, { initialState, rootReducer } from "./context/appContext";
 import routes from "./routes";
 import { useRoutes } from "react-router-dom";
 
 function App() {
-  const element = useRoutes(routes);
+  const appRoutes = useRoutes(routes);
+  // TODO: should fix any
+  const [state, dispatch] = useReducer(rootReducer as any, initialState);
   return (
-    <AppContext.Provider value={{ urls: [], authenticate: null }}>
-      {element}
+    <AppContext.Provider value={{ state: state as any, dispatch }}>
+      {appRoutes}
     </AppContext.Provider>
   );
 }

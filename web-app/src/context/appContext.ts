@@ -1,15 +1,27 @@
-import { createContext, useContext } from "react";
-import { IUrl } from "../models/url.interface";
-import { IAuthenticateResponse } from "../models/auth.interface";
+import { Dispatch, createContext, useContext } from "react";
+import { AppContextState } from ".";
+import { AuthActions, authReducer } from "./authReducer";
+import { URLActions, urlReducer } from "./urlReducer";
 
-interface AppContextState {
-  urls: IUrl[];
-  authenticate: IAuthenticateResponse | null;
-}
-
-const AppContext = createContext<AppContextState>({
+export const initialState: AppContextState = {
   urls: [],
   authenticate: null,
+};
+
+const AppContext = createContext<{
+  state: AppContextState;
+  dispatch: Dispatch<AuthActions>;
+}>({
+  state: initialState,
+  dispatch: () => null,
+});
+
+export const rootReducer = (
+  { urls, authenticate }: AppContextState,
+  actions: AuthActions | URLActions
+) => ({
+  auth: authReducer(authenticate, actions),
+  url: urlReducer(urls, actions),
 });
 
 if (!AppContext) {

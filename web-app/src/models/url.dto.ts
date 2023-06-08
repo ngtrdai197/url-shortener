@@ -1,8 +1,8 @@
 import { Expose } from "class-transformer";
 
-export class UrlDto {
+export class URLDto {
   @Expose()
-  id!: string;
+  id!: number;
 
   @Expose({ name: "user_id" })
   userId!: number;
