@@ -68,7 +68,8 @@ module.exports = {
     // `semi-spacing` conflicts with `prettier`
     // `space-infix-ops` conflicts with `prettier`
     // `space-in-parens` conflicts with `prettier`
-    '@typescript-eslint/no-unused-vars': [1, { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': 0,
+    'no-unused-vars': 0,
     yoda: 2,
   },
 

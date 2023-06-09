@@ -21,7 +21,7 @@ export const rootReducer = ({ urls, authenticate }: AppContextState, actions: Au
   url: urlReducer(urls, actions),
 });
 
-if (!AppContext) {
+if (!(typeof AppContext === 'object' && AppContext !== null)) {
   throw new Error('useAppContext has to be used within <AppContext.Provider>');
 }
 

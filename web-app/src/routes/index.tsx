@@ -1,5 +1,5 @@
-import type { RouteObject } from 'react-router-dom';
-import Layout from '../Layout/Layout';
+import { RouteObject } from 'react-router-dom';
+import Layout from '../layout/Layout';
 import Login from '../views/pages/Login';
 import Registration from '../views/pages/Register';
 

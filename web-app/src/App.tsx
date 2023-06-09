@@ -6,6 +6,7 @@ import routes from './routes';
 
 const App: React.FC = () => {
   const appRoutes = useRoutes(routes);
+  // TODO: should we replace any
   const [state, dispatch] = useReducer(rootReducer as any, initialState);
 
   return <AppContext.Provider value={{ state: state as any, dispatch }}>{appRoutes}</AppContext.Provider>;

@@ -16,5 +16,8 @@
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
-  "eslint.lintTask.enable": true
+  "eslint.lintTask.enable": true,
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ]
 }

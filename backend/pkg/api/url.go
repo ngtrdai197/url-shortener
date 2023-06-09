@@ -3,7 +3,6 @@ package api
 import (
 	"database/sql"
 	"encoding/base64"
-	"fmt"
 	"math/big"
 	"net/http"
 	"time"
@@ -68,7 +67,6 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	fmt.Printf("request %v", req)
 	found, err := s.store.GetUrlByLong(ctx, req.LongUrl)
 	if err == nil {
 		ctx.JSON(http.StatusOK, newUrlResponse(found))

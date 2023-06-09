@@ -10,7 +10,7 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const { state: _state, dispatch } = useAppContext();
+  const { state: _, dispatch } = useAppContext();
 
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);

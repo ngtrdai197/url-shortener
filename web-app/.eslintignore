@@ -1,1 +1,4 @@
 *.d.ts
+*.config.ts
+*.config.js
+*.cjs
