@@ -1,7 +1,7 @@
-import { AuthenticateResponseDto } from "../models/auth.dto";
-import { URLDto } from "../models/url.dto";
-import { AuthActions } from "./authReducer";
-import { URLActions } from "./urlReducer";
+import { AuthenticateResponseDto } from '../models/auth.dto';
+import { URLDto } from '../models/url.dto';
+import { AuthActions } from './authReducer';
+import { URLActions } from './urlReducer';
 
 export type ActionMap<M extends { [key: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined

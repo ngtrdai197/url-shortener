@@ -1,0 +1,20 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "stylelint.enable": true,
+  "stylelint.validate": ["css", "scss"],
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "files.eol": "\r\n",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true,
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
+  },
+  "editor.guides.bracketPairs": true,
+  "editor.bracketPairColorization.enabled": true,
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "eslint.lintTask.enable": true
+}

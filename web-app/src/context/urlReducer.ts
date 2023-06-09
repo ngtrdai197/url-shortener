@@ -1,13 +1,13 @@
-import { URLDto } from "../models/url.dto";
-import { ActionMap, RootActions } from ".";
+import { type URLDto } from '../models/url.dto';
+import { type ActionMap, type RootActions } from '.';
 
 export enum URL_ACTION {
-  GET_LIST_URLS = "GET_LIST_URLS",
+  GET_LIST_URLS = 'GET_LIST_URLS',
 }
 
-type URLPayload = {
+interface URLPayload {
   [URL_ACTION.GET_LIST_URLS]: URLDto[];
-};
+}
 
 export type URLActions = ActionMap<URLPayload>[keyof ActionMap<URLPayload>];
 

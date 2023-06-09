@@ -1,12 +1,12 @@
-import Main from "../views/components/Main";
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom';
+import Main from '../views/components/Main';
 
-const Layout = () => {
+function Layout() {
   return (
     <Main>
       <Outlet />
     </Main>
   );
-};
+}
 
 export default Layout;

@@ -1,18 +1,14 @@
-import { useReducer } from "react";
-import "./App.scss";
-import AppContext, { initialState, rootReducer } from "./context/appContext";
-import routes from "./routes";
-import { useRoutes } from "react-router-dom";
+import React, { useReducer } from 'react';
+import './App.scss';
+import { useRoutes } from 'react-router-dom';
+import AppContext, { initialState, rootReducer } from './context/appContext';
+import routes from './routes';
 
-function App() {
+const App: React.FC = () => {
   const appRoutes = useRoutes(routes);
-  // TODO: should fix any
   const [state, dispatch] = useReducer(rootReducer as any, initialState);
-  return (
-    <AppContext.Provider value={{ state: state as any, dispatch }}>
-      {appRoutes}
-    </AppContext.Provider>
-  );
-}
+
+  return <AppContext.Provider value={{ state: state as any, dispatch }}>{appRoutes}</AppContext.Provider>;
+};
 
 export default App;
