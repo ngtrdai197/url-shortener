@@ -17,7 +17,8 @@
   "less.validate": false,
   "scss.validate": false,
   "eslint.lintTask.enable": true,
-  "eslint.workingDirectories": [
-    { "mode": "auto" }
-  ]
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  }
 }

@@ -2,13 +2,14 @@ FROM node:16-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json .
+COPY pnpm-lock.yaml .
 
-RUN npm install
+RUN npm install -g pnpm@latest && \
+  pnpm install
 
 COPY . .
 
-# DEFAULT PORT OF VITE
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "dev"]
