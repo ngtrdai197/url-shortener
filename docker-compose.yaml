@@ -33,7 +33,7 @@ services:
   postgres_db:
     image: postgres
     environment:
-      POSTGRES_DB: url_shorterner
+      POSTGRES_DB: url_shortener
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
