@@ -10,8 +10,8 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
-	db "github.com/ngtrdai197/url-shorterner/db/sqlc"
-	"github.com/ngtrdai197/url-shorterner/pkg/token"
+	db "github.com/ngtrdai197/url-shortener/db/sqlc"
+	"github.com/ngtrdai197/url-shortener/pkg/token"
 	"github.com/rs/zerolog/log"
 )
 
@@ -67,41 +67,45 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	found, err := s.store.GetUrlByLong(ctx, req.LongUrl)
+	foundUrl, err := s.store.GetUrlByLong(ctx, req.LongUrl)
 	if err == nil {
-		ctx.JSON(http.StatusOK, newUrlResponse(found))
+		ctx.JSON(http.StatusOK, newUrlResponse(foundUrl))
 		return
 	}
 
-	if err == sql.ErrNoRows {
-		node, err := snowflake.NewNode(97)
-		if err != nil {
-			log.Error().Msgf("new node error=%v", err)
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-
-		authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-		ID := node.Generate().Int64()
-		arg := db.CreateUrlParams{
-			ID:          ID,
-			ShortUrl:    base64.RawURLEncoding.EncodeToString(big.NewInt(int64(ID)).Bytes()),
-			LongUrl:     req.LongUrl,
-			UserID:      authPayload.UserID,
-			Description: sql.NullString{String: req.Description, Valid: true},
-		}
-		url, err := s.store.CreateUrl(ctx, arg)
-		if err != nil {
-			log.Error().Msgf("create url with error=%v", err)
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-
-		response := newUrlResponse(url)
-		ctx.JSON(http.StatusOK, response)
+	if err != sql.ErrNoRows {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+
+	node, err := snowflake.NewNode(97)
+	if err != nil {
+		log.Error().Msgf("new node error=%v", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	id := node.Generate().Int64()
+
+	// Encode the ID as a base64 string to make it shorter.
+	shortUrl := base64.RawURLEncoding.EncodeToString(big.NewInt(int64(id)).Bytes())
+	arg := db.CreateUrlParams{
+		ID:          id,
+		ShortUrl:    shortUrl,
+		LongUrl:     req.LongUrl,
+		UserID:      authPayload.UserID,
+		Description: sql.NullString{String: req.Description, Valid: true},
+	}
+	createdUrl, err := s.store.CreateUrl(ctx, arg)
+	if err != nil {
+		log.Error().Msgf("create url with error=%v", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	response := newUrlResponse(createdUrl)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (s *Server) GetListUrl(ctx *gin.Context) {

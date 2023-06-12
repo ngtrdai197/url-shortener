@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	db "github.com/ngtrdai197/url-shorterner/db/sqlc"
-	util "github.com/ngtrdai197/url-shorterner/utils"
+	db "github.com/ngtrdai197/url-shortener/db/sqlc"
+	util "github.com/ngtrdai197/url-shortener/utils"
 )
 
 type loginUserRequest struct {

@@ -7,8 +7,8 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/ngtrdai197/url-shorterner/config"
-	"github.com/ngtrdai197/url-shorterner/pkg/api"
+	"github.com/ngtrdai197/url-shortener/config"
+	"github.com/ngtrdai197/url-shortener/pkg/api"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )

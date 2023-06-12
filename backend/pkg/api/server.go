@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
-	"github.com/ngtrdai197/url-shorterner/config"
-	db "github.com/ngtrdai197/url-shorterner/db/sqlc"
-	"github.com/ngtrdai197/url-shorterner/pkg/token"
+	"github.com/ngtrdai197/url-shortener/config"
+	db "github.com/ngtrdai197/url-shortener/db/sqlc"
+	"github.com/ngtrdai197/url-shortener/pkg/token"
 	"github.com/rs/zerolog/log"
 )
 
