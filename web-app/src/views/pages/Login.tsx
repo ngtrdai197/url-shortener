@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-import { Link } from 'react-router-dom';
 import { plainToInstance } from 'class-transformer';
+import { Link } from 'react-router-dom';
 import { useAppContext } from '../../context/appContext';
 import { AUTH_ACTION } from '../../context/authReducer';
+import { environment } from '../../env';
 import { LoginRequestDto } from '../../models/auth.dto';
-import axios from 'axios';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -13,6 +13,7 @@ const Login: React.FC = () => {
 
   const { state: _, dispatch } = useAppContext();
 
+  const { VITE_BASE_ENDPOINT } = environment;
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };
@@ -26,7 +27,7 @@ const Login: React.FC = () => {
     /**
      * Example endpoint
      * axios
-        .get('http://0.0.0.0:8088/urls?page=1&limit=10', {
+        .get(`${VITE_BASE_ENDPOINT}/urls?page=1&limit=10`, {
           headers: {
             Authorization:
               'Bearer v2.local.E0BXfnfOeRdbTd7z1sDRW4xVzwpVGnV7zIL6VhaPBRmf2XHlgEwqEZQbxLJipjPMphSRC8-0RWaiQDOXoSxlNUagOm0cIZXDptD25jMwK3IZpMkklVexWxCrr2pqL7unbh6scWpz-PYSTgx38Q4Ecq6By_ZrDqbFU0LpUFVbUBtnlfCsGv23t13v7MOPZOXR-KifGd33rhSxy0AfCnXOrCIQy7LRxw_tY87KJr-Q_CdQeI30ceyT2jb3ADo.bnVsbA',

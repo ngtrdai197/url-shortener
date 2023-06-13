@@ -9,7 +9,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.tslint": true,
     "source.fixAll.eslint": true,
-    "source.fixAll.stylelint": true
+    "source.fixAll.stylelint": true,
+    "source.organizeImports": true
   },
   "editor.guides.bracketPairs": true,
   "editor.bracketPairColorization.enabled": true,

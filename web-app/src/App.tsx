@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react';
-import './App.scss';
 import { useRoutes } from 'react-router-dom';
+import './App.scss';
 import AppContext, { initialState, rootReducer } from './context/appContext';
 import routes from './routes';
 
