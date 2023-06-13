@@ -6,6 +6,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const createUrl = `-- name: CreateUrl :one
@@ -54,30 +55,51 @@ func (q *Queries) GetCountURLs(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const getCountURLsOfUser = `-- name: GetCountURLsOfUser :one
+SELECT COUNT(1)
+FROM urls WHERE user_id = $1
+`
+
+func (q *Queries) GetCountURLsOfUser(ctx context.Context, userID int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCountURLsOfUser, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getListURLs = `-- name: GetListURLs :many
-SELECT id, short_url, long_url, created_at, user_id, description
-FROM urls
-WHERE user_id = $1
+SELECT urls.id, urls.short_url, urls.long_url, urls.created_at, urls.user_id, urls.description, u.full_name user_full_name, u.username user_username, u.created_at user_created_at FROM urls LEFT JOIN users u ON u.id = urls.user_id
 ORDER BY id DESC
-LIMIT $2
-OFFSET $3
+LIMIT $1
+OFFSET $2
 `
 
 type GetListURLsParams struct {
-	UserID int64 `json:"user_id"`
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]Url, error) {
-	rows, err := q.db.QueryContext(ctx, getListURLs, arg.UserID, arg.Limit, arg.Offset)
+type GetListURLsRow struct {
+	ID            int64          `json:"id"`
+	ShortUrl      string         `json:"short_url"`
+	LongUrl       string         `json:"long_url"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UserID        int64          `json:"user_id"`
+	Description   sql.NullString `json:"description"`
+	UserFullName  string         `json:"user_full_name"`
+	UserUsername  string         `json:"user_username"`
+	UserCreatedAt time.Time      `json:"user_created_at"`
+}
+
+func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]GetListURLsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getListURLs, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Url{}
+	items := []GetListURLsRow{}
 	for rows.Next() {
-		var i Url
+		var i GetListURLsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.ShortUrl,
@@ -85,6 +107,68 @@ func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]Url
 			&i.CreatedAt,
 			&i.UserID,
 			&i.Description,
+			&i.UserFullName,
+			&i.UserUsername,
+			&i.UserCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getListURLsOfUser = `-- name: GetListURLsOfUser :many
+SELECT urls.id, urls.short_url, urls.long_url, urls.created_at, urls.user_id, urls.description, u.full_name user_full_name, u.username user_username, u.created_at user_created_at FROM urls LEFT JOIN users u ON u.id = urls.user_id
+WHERE user_id = $1
+ORDER BY id DESC
+LIMIT $2
+OFFSET $3
+`
+
+type GetListURLsOfUserParams struct {
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type GetListURLsOfUserRow struct {
+	ID            int64          `json:"id"`
+	ShortUrl      string         `json:"short_url"`
+	LongUrl       string         `json:"long_url"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UserID        int64          `json:"user_id"`
+	Description   sql.NullString `json:"description"`
+	UserFullName  string         `json:"user_full_name"`
+	UserUsername  string         `json:"user_username"`
+	UserCreatedAt time.Time      `json:"user_created_at"`
+}
+
+func (q *Queries) GetListURLsOfUser(ctx context.Context, arg GetListURLsOfUserParams) ([]GetListURLsOfUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getListURLsOfUser, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetListURLsOfUserRow{}
+	for rows.Next() {
+		var i GetListURLsOfUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ShortUrl,
+			&i.LongUrl,
+			&i.CreatedAt,
+			&i.UserID,
+			&i.Description,
+			&i.UserFullName,
+			&i.UserUsername,
+			&i.UserCreatedAt,
 		); err != nil {
 			return nil, err
 		}

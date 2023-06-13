@@ -20,17 +20,25 @@ type createUrlRequest struct {
 	Description string `json:"description"`
 }
 
-type rediectUrlRequest struct {
+type redirectUrlRequest struct {
 	ShortUrl string `form:"v" binding:"required"`
 }
 
-type urlResponse struct {
+type urlsUserResponse struct {
 	Id          int64     `json:"id"`
 	UserID      int64     `json:"user_id"`
 	ShortUrl    string    `json:"short_url"`
 	LongUrl     string    `json:"long_url"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
+}
+type urlsResponse struct {
+	Id          int64        `json:"id"`
+	User        userResponse `json:"user"`
+	ShortUrl    string       `json:"short_url"`
+	LongUrl     string       `json:"long_url"`
+	Description string       `json:"description"`
+	CreatedAt   time.Time    `json:"created_at"`
 }
 
 type getListUrlRequest struct {
@@ -44,15 +52,60 @@ type paginateData struct {
 	Total int64 `json:"total"`
 }
 
-type getListUrlResponse struct {
-	Paginate paginateData  `json:"paginate"`
-	Data     []urlResponse `json:"data"`
+type getListURLsUserResponse struct {
+	Paginate paginateData       `json:"paginate"`
+	Data     []urlsUserResponse `json:"data"`
+}
+type getListURLsResponse struct {
+	Paginate paginateData   `json:"paginate"`
+	Data     []urlsResponse `json:"data"`
 }
 
-func newUrlResponse(url db.Url) urlResponse {
-	return urlResponse{
+type baseUrlResponse struct {
+	Id          int64     `json:"id"`
+	UserID      int64     `json:"user_id"`
+	ShortUrl    string    `json:"short_url"`
+	LongUrl     string    `json:"long_url"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
+func newBaseUrlResponse(url db.Url) baseUrlResponse {
+	return baseUrlResponse{
 		Id:          url.ID,
 		UserID:      url.UserID,
+		ShortUrl:    url.ShortUrl,
+		LongUrl:     url.LongUrl,
+		CreatedAt:   url.CreatedAt,
+		Description: url.Description.String,
+	}
+}
+func newURLUserResponse(url db.GetListURLsOfUserRow) urlsResponse {
+	user := userResponse{
+		UserID:    url.UserID,
+		Username:  url.UserUsername,
+		FullName:  url.UserFullName,
+		CreatedAt: url.UserCreatedAt,
+	}
+	return urlsResponse{
+		Id:          url.ID,
+		User:        user,
+		ShortUrl:    url.ShortUrl,
+		LongUrl:     url.LongUrl,
+		CreatedAt:   url.CreatedAt,
+		Description: url.Description.String,
+	}
+}
+func newUrlResponse(url db.GetListURLsRow) urlsResponse {
+	user := userResponse{
+		UserID:    url.UserID,
+		Username:  url.UserUsername,
+		FullName:  url.UserFullName,
+		CreatedAt: url.UserCreatedAt,
+	}
+	return urlsResponse{
+		Id:          url.ID,
+		User:        user,
 		ShortUrl:    url.ShortUrl,
 		LongUrl:     url.LongUrl,
 		CreatedAt:   url.CreatedAt,
@@ -69,7 +122,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	}
 	foundUrl, err := s.store.GetUrlByLong(ctx, req.LongUrl)
 	if err == nil {
-		ctx.JSON(http.StatusOK, newUrlResponse(foundUrl))
+		ctx.JSON(http.StatusOK, newBaseUrlResponse(foundUrl))
 		return
 	}
 
@@ -104,11 +157,11 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		return
 	}
 
-	response := newUrlResponse(createdUrl)
+	response := newBaseUrlResponse(createdUrl)
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (s *Server) GetListUrl(ctx *gin.Context) {
+func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 	req := getListUrlRequest{
 		Limit: defaultLimit,
 		Page:  defaultPage,
@@ -120,14 +173,61 @@ func (s *Server) GetListUrl(ctx *gin.Context) {
 	}
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	urls, err := s.store.GetListURLs(ctx, db.GetListURLsParams{
+	urls, err := s.store.GetListURLsOfUser(ctx, db.GetListURLsOfUserParams{
 		UserID: authPayload.UserID,
 		Limit:  int32(req.Limit),
 		Offset: int32((req.Page - 1) * req.Limit),
 	})
 	if err != nil && err != sql.ErrNoRows {
 		if err == sql.ErrNoRows {
-			urls = []db.Url{}
+			urls = []db.GetListURLsOfUserRow{}
+		} else {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	}
+
+	totalUrls, err := s.store.GetCountURLsOfUser(ctx, authPayload.UserID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	response := getListURLsResponse{
+		Paginate: paginateData{
+			Limit: req.Limit,
+			Page:  req.Page,
+			Total: totalUrls,
+		},
+	}
+
+	data := transformListUrlToUrlResponse(urls).([]urlsResponse)
+	if data != nil {
+		response.Data = data
+	} else {
+		response.Data = []urlsResponse{}
+	}
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (s *Server) GetListURLs(ctx *gin.Context) {
+	req := getListUrlRequest{
+		Limit: defaultLimit,
+		Page:  defaultPage,
+	}
+
+	if err := ctx.BindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	urls, err := s.store.GetListURLs(ctx, db.GetListURLsParams{
+		Limit:  int32(req.Limit),
+		Offset: int32((req.Page - 1) * req.Limit),
+	})
+	if err != nil && err != sql.ErrNoRows {
+		if err == sql.ErrNoRows {
+			urls = []db.GetListURLsRow{}
 		} else {
 			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
@@ -140,18 +240,25 @@ func (s *Server) GetListUrl(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, getListUrlResponse{
+	response := getListURLsResponse{
 		Paginate: paginateData{
 			Limit: req.Limit,
 			Page:  req.Page,
 			Total: totalUrls,
 		},
-		Data: convertDBUrlsToURLResponses(urls),
-	})
+	}
+
+	data := transformListUrlToUrlResponse(urls).([]urlsResponse)
+	if data != nil {
+		response.Data = data
+	} else {
+		response.Data = []urlsResponse{}
+	}
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (s *Server) RedirectUrl(ctx *gin.Context) {
-	var req rediectUrlRequest
+	var req redirectUrlRequest
 
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -169,12 +276,21 @@ func (s *Server) RedirectUrl(ctx *gin.Context) {
 	http.Redirect(ctx.Writer, ctx.Request, url.LongUrl, http.StatusSeeOther)
 }
 
-func convertDBUrlsToURLResponses(dbUrls []db.Url) []urlResponse {
-	urlResponses := make([]urlResponse, len(dbUrls))
-
-	for i, dbUrl := range dbUrls {
-		urlResponses[i] = newUrlResponse(dbUrl)
+func transformListUrlToUrlResponse(dbUrls interface{}) interface{} {
+	switch dbUrls.(type) {
+	case []db.GetListURLsOfUserRow:
+		urlResponses := make([]urlsResponse, len(dbUrls.([]db.GetListURLsOfUserRow)))
+		for i, row := range dbUrls.([]db.GetListURLsOfUserRow) {
+			urlResponses[i] = newURLUserResponse(row)
+		}
+		return urlResponses
+	case []db.GetListURLsRow:
+		urlResponses := make([]urlsResponse, len(dbUrls.([]db.GetListURLsRow)))
+		for i, row := range dbUrls.([]db.GetListURLsRow) {
+			urlResponses[i] = newUrlResponse(row)
+		}
+		return urlResponses
+	default:
+		return nil // or return an error message here
 	}
-
-	return urlResponses
 }

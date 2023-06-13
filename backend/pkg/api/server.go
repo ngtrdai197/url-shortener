@@ -62,7 +62,8 @@ func (s *Server) setupRouter(c *config.Config) {
 	authenticatedRoutes.Use(authMiddleware(s.tokenMaker))
 	{
 		authenticatedRoutes.POST("/urls", s.CreateUrl)
-		authenticatedRoutes.GET("/urls", s.GetListUrl)
+		authenticatedRoutes.GET("/urls", s.GetListURLsOfUser)
+		authenticatedRoutes.GET("/all-urls", s.GetListURLs)
 	}
 
 	s.router = r

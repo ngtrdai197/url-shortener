@@ -113,7 +113,7 @@ curl --location 'http://localhost:8088/urls' \
 }
 ```
 
-### Get a list of shortened urls
+### Get a list of user's shortened urls, based on access token
 
 ```bash
 curl --location 'http://localhost:8088/urls?page=1&limit=10' \
@@ -131,7 +131,45 @@ curl --location 'http://localhost:8088/urls?page=1&limit=10' \
   "data": [
     {
       "id": 1668231887958970368,
-      "user_id": 1,
+      "user": {
+        "id": 1,
+        "username": "johndoe",
+        "full_name": "John Doe",
+        "created_at": "2023-06-12T12:20:40.20189Z"
+      },
+      "short_url": "FybAEDzGEAA",
+      "long_url": "https://www.youtube.com/watch?v=yc5gRiWGjT0&ab_channel=B%C3%A1cs%C4%A9H%E1%BA%A3i",
+      "description": "Bác sĩ Hải - Rolling Ball | New Mixtape 2021 | House Lak - Viet Deep",
+      "created_at": "2023-06-12T12:20:50.997353Z"
+    }
+  ]
+}
+```
+
+### Get all shortened urls on the system
+
+```bash
+curl --location 'http://localhost:8088/all-urls?page=1&limit=10' \
+--header 'Authorization: Bearer <access_token>'
+```
+
+```json
+// Response
+{
+  "paginate": {
+    "limit": 10,
+    "page": 1,
+    "total": 1
+  },
+  "data": [
+    {
+      "id": 1668231887958970368,
+      "user": {
+        "id": 1,
+        "username": "johndoe",
+        "full_name": "John Doe",
+        "created_at": "2023-06-12T12:20:40.20189Z"
+      },
       "short_url": "FybAEDzGEAA",
       "long_url": "https://www.youtube.com/watch?v=yc5gRiWGjT0&ab_channel=B%C3%A1cs%C4%A9H%E1%BA%A3i",
       "description": "Bác sĩ Hải - Rolling Ball | New Mixtape 2021 | House Lak - Viet Deep",
