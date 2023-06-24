@@ -1,0 +1,9 @@
+@use 'sass:map';
+
+$zIndex: (
+  'overlay': 99999,
+);
+
+@function zIndex($font) {
+  @return string.unquote(map.get($zIndex, $font));
+}
