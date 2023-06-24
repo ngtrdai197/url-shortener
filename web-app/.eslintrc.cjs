@@ -70,6 +70,10 @@ module.exports = {
     // `space-in-parens` conflicts with `prettier`
     '@typescript-eslint/no-unused-vars': 0,
     'no-unused-vars': 0,
+    '@typescript-eslint/strict-boolean-expressions': 0,
+    '@typescript-eslint/restrict-template-expressions': 0,
+    '@typescript-eslint/restrict-plus-operands': 0,
+    '@typescript-eslint/no-misused-promises': 0,
     yoda: 2,
   },
 

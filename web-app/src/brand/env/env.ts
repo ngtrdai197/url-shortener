@@ -5,7 +5,7 @@ export class Environment {
   VITE_APP_TITLE = 'URL Shortener';
 
   @Expose()
-  VITE_BASE_ENDPOINT = 'http://0.0.0.0:8088';
+  VITE_BASE_ENDPOINT = 'http://localhost:8088';
 
   public toInstance() {
     return plainToInstance(Environment, import.meta.env, {

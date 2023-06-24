@@ -63,7 +63,7 @@ curl --location 'http://localhost:8088/users' \
 ```
 
 ```bash
-curl --location 'http://localhost:8088/users/login' \
+curl --location 'http://localhost:8088/auth/login' \
 --header 'Content-Type: application/json' \
 --data '{
     "username": "johndoe",

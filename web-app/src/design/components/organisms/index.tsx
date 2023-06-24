@@ -1,5 +1,5 @@
 import React, { type PropsWithChildren } from 'react';
-import styles from './Main.module.scss';
+import styles from './index.module.scss';
 
 interface Props extends PropsWithChildren {}
 
