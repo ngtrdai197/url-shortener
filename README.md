@@ -188,6 +188,12 @@ localhost:8088/r?v=Fx4r2XiGEAA
 
 ## Web app (WIP)
 
+### Create .env file
+
+```bash
+cp .env.example .env
+```
+
 ...
 
 <hr />
@@ -201,7 +207,11 @@ cp .env.example .env
 ```
 
 ```bash
-docker-compose up --build
+# build and up services
+$ make build
+
+# up services
+$ make up
 ```
 
 ...
