@@ -63,7 +63,7 @@ curl --location 'http://localhost:8088/users' \
 ```
 
 ```bash
-curl --location 'http://localhost:8088/users/login' \
+curl --location 'http://localhost:8088/auth/login' \
 --header 'Content-Type: application/json' \
 --data '{
     "username": "johndoe",
@@ -85,6 +85,23 @@ curl --location 'http://localhost:8088/users/login' \
     "full_name": "John Doe",
     "created_at": "2023-06-12T12:20:40.20189Z"
   }
+}
+```
+
+```bash
+# Refresh token
+curl --location 'http://localhost:8088/auth/renew-token' \
+--header 'Content-Type: application/json' \
+--data '{
+    "refresh_token": "v2.local.Wo4HNdTdHgopv2flrjNfXJUYSSIDNZc0jzw9GlS4stZD2xwWOs6LFskg4fPO_uIZR-pIIn_pYC6UWdoqhXm3N3AznAOpKdPu1Ufo7vt1QGZERiku7qa6WN-gAAgIGxSf_LyQTKs6k_5JN4KhM4mKnZqwPvqWp-owdsUf0ynGF1r6h8xPi92dGkSccbeCFBXJCh9QrLxmCpfk8pwmgFMO_4LahkGQSn7wGpuuLg8P4aN4uhghMj4EqE05n2Bv9JX5.bnVsbA"
+}'
+```
+
+```json
+// Refresh token response
+{
+  "access_token": "v2.local.U7S1VeVHXpsnBaRcBBSkVfLWUfCVbKtoBcUbDzopm3zcXgILRdon68wArpF9-B4Wmzc-PPcm8ZHc2sXSpA27GcczzmpMD1EpMV27eyrzl8qTpcIzTo1L0jrJJ3tZyDVRae4krYeK9FCVdfDtkkCL-1lFxZf5pyKuVxdFTKEwqXFjpTUJw-0P-i7z60Jj9TgdskOMs3dF9OOucaSX0qkFeCft7cxaFtldXqtqjA5vxi-QHlQWZ87cWcDCEW46Kzl9.bnVsbA",
+  "access_token_expires_at": "2023-06-27T01:28:01.282398+07:00"
 }
 ```
 
