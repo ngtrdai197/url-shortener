@@ -2,6 +2,8 @@ package api
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -25,26 +27,39 @@ type loginUserResponse struct {
 	User                  userResponse `json:"user"`
 }
 
+type renewAccessTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+type renewAccessTokenResponse struct {
+	AccessToken          string    `json:"access_token"`
+	AccessTokenExpiresAt time.Time `json:"access_token_expires_at"`
+}
+
 func (server *Server) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
 	user, err := server.store.GetUser(ctx, req.Username)
+
+	credentialsError := errors.New("Credentials username or password incorrect")
+
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.JSON(http.StatusUnauthorized, errorResponse(credentialsError))
 			return
 		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
 	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(credentialsError))
 		return
 	}
 
@@ -53,7 +68,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		server.config.AccessTokenDuration,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
@@ -62,7 +77,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		server.config.RefreshTokenDuration,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
@@ -74,7 +89,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		ExpiresAt:    refreshPayload.ExpiredAt,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
@@ -85,6 +100,65 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
 		User:                  newUserResponse(user),
+	}
+	ctx.JSON(http.StatusOK, rsp)
+}
+
+func (server *Server) renewAccessToken(ctx *gin.Context) {
+	var req renewAccessTokenRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	refreshPayload, err := server.tokenMaker.VerifyToken(req.RefreshToken)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
+
+	session, err := server.store.GetSession(ctx, refreshPayload.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if session.IsBlocked {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(fmt.Errorf("blocked session")))
+		return
+	}
+
+	if session.UserID != refreshPayload.UserID {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(fmt.Errorf("incorrect session user")))
+		return
+	}
+
+	if session.RefreshToken != req.RefreshToken {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(fmt.Errorf("mismatched session token")))
+		return
+	}
+
+	if time.Now().After(session.ExpiresAt) {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(fmt.Errorf("expired session")))
+		return
+	}
+
+	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
+		refreshPayload.UserID,
+		server.config.AccessTokenDuration,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	rsp := renewAccessTokenResponse{
+		AccessToken:          accessToken,
+		AccessTokenExpiresAt: accessPayload.ExpiredAt,
 	}
 	ctx.JSON(http.StatusOK, rsp)
 }

@@ -53,6 +53,7 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 	}
 }
 
+// corsMiddleware creates a gin middleware for cors
 func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 

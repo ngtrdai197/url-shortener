@@ -127,14 +127,14 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	}
 
 	if err != sql.ErrNoRows {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
 	node, err := snowflake.NewNode(97)
 	if err != nil {
 		log.Error().Msgf("new node error=%v", err)
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
@@ -153,7 +153,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	createdUrl, err := s.store.CreateUrl(ctx, arg)
 	if err != nil {
 		log.Error().Msgf("create url with error=%v", err)
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
@@ -182,14 +182,14 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 		if err == sql.ErrNoRows {
 			urls = []db.GetListURLsOfUserRow{}
 		} else {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			ginInternalError(ctx, err)
 			return
 		}
 	}
 
 	totalUrls, err := s.store.GetCountURLsOfUser(ctx, authPayload.UserID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
@@ -229,14 +229,14 @@ func (s *Server) GetListURLs(ctx *gin.Context) {
 		if err == sql.ErrNoRows {
 			urls = []db.GetListURLsRow{}
 		} else {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			ginInternalError(ctx, err)
 			return
 		}
 	}
 
 	totalUrls, err := s.store.GetCountURLs(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ginInternalError(ctx, err)
 		return
 	}
 
@@ -278,18 +278,21 @@ func (s *Server) RedirectUrl(ctx *gin.Context) {
 
 func transformListUrlToUrlResponse(dbUrls interface{}) interface{} {
 	switch dbUrls.(type) {
+
 	case []db.GetListURLsOfUserRow:
 		urlResponses := make([]urlsResponse, len(dbUrls.([]db.GetListURLsOfUserRow)))
 		for i, row := range dbUrls.([]db.GetListURLsOfUserRow) {
 			urlResponses[i] = newURLUserResponse(row)
 		}
 		return urlResponses
+
 	case []db.GetListURLsRow:
 		urlResponses := make([]urlsResponse, len(dbUrls.([]db.GetListURLsRow)))
 		for i, row := range dbUrls.([]db.GetListURLsRow) {
 			urlResponses[i] = newUrlResponse(row)
 		}
 		return urlResponses
+
 	default:
 		return nil // or return an error message here
 	}
