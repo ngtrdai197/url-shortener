@@ -23,6 +23,6 @@
     "editor.defaultFormatter": "ms-azuretools.vscode-docker"
   },
   "[go]": {
-    "editor.defaultFormatter": "golang.go-nightly"
+    "editor.defaultFormatter": "golang.go"
   }
 }
