@@ -231,6 +231,25 @@ $ make build
 $ make up
 ```
 
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="#"><img src="https://avatars.githubusercontent.com/u/37446552?v=4" width="75px;" alt="" style="border-radius: 50%"/><br /><sub><b>Dai Nguyen</b></sub></a><br /><a href="https://github.com/ngtrdai197/url-shortener/commits?author=ngtrdai197" title="Code">💻</a> <a href="#ideas-ngtrdai197" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="#"><img src="https://avatars.githubusercontent.com/u/123945622?v=4" width="75px;" alt="" style="border-radius: 50%"/><br /><sub><b>Toan Nguyen</b></sub></a><br /><a href="https://github.com/ngtrdai197/url-shortener/commits?author=4DVN-ToanNT" title="Code">💻</a> <a href="#ideas-ngtrdai197" title="Ideas, Planning">🤔</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 ...
 
 ## The project is still in progress (WIP :rocket:)
