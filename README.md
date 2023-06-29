@@ -203,7 +203,7 @@ localhost:8088/r?v=Fx4r2XiGEAA
 
 <hr />
 
-## Web app (WIP)
+## Web App
 
 ### Create .env file
 
