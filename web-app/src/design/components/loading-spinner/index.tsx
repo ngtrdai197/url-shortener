@@ -6,5 +6,5 @@ interface LoadingProps {
 }
 
 export const LoadingSpinner: React.FC<LoadingProps> = ({ open }) => (
-  <div className={mapModifiers('loading-spinner', open && 'opened')} />
+  <div className={mapModifiers('c-loading-spinner', open && 'opened')} />
 );

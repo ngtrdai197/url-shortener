@@ -110,5 +110,11 @@ module.exports = {
         'no-restricted-imports': 0,
       },
     },
+    {
+      files: ['src/**/*.stories.tsx'],
+      rules: {
+        'react-hooks/rules-of-hooks': 0,
+      },
+    },
   ],
 };

@@ -10,12 +10,12 @@ import { HttpInterceptor } from '../utils/libs/http-interceptor';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
+    <BrowserRouter>
+      <Provider store={store}>
         <HttpInterceptor>
           <App />
         </HttpInterceptor>
-      </BrowserRouter>
-    </Provider>
+      </Provider>
+    </BrowserRouter>
   </React.StrictMode>
 );

@@ -11,7 +11,7 @@ export interface <%= h.changeCase.pascal(name) %>Props {
 }
 
 export const <%= h.changeCase.pascal(name) %>: React.FC<<%= h.changeCase.pascal(name) %>Props> = (props) => (
-  <div className={mapModifiers('<%= h.changeCase.param(name) %>', props.modifiers)}>
+  <div className={mapModifiers('c-<%= h.changeCase.param(name) %>', props.modifiers)}>
     {props.children}
   </div>
 );
