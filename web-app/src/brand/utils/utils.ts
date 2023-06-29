@@ -1,4 +1,4 @@
-import { STORAGE_PREFIX } from '../contants/contants';
+import { STORAGE_PREFIX } from '../constants';
 
 interface CookieArgs {
   name: string;

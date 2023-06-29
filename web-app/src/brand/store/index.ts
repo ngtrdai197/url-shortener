@@ -1,15 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/dist/query';
 
-import { authenAPI } from './../services/authen';
+import { authAPI } from '../services/auth.service';
 import loadingSpinnerReducer from './slices/loadingSpinner';
 
 export const store = configureStore({
   reducer: {
     loadingSpinner: loadingSpinnerReducer,
-    [authenAPI.reducerPath]: authenAPI.reducer,
+    [authAPI.reducerPath]: authAPI.reducer,
   },
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(authenAPI.middleware),
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(authAPI.middleware),
 });
 
 setupListeners(store.dispatch);

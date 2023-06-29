@@ -1,15 +1,16 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
+import { HTTP_METHOD } from '../enums/http-method.enum';
 import { AuthenticateResponseDto, LoginRequestDto } from '../models/auth.dto';
 import { axiosBaseQuery } from '../store/config/customBaseQuery';
 
-export const authenAPI = createApi({
-  reducerPath: 'authenAPI',
+export const authAPI = createApi({
+  reducerPath: 'authAPI',
   baseQuery: axiosBaseQuery(),
   endpoints: builder => ({
     login: builder.mutation<AuthenticateResponseDto, LoginRequestDto>({
-      query: req => ({ url: '/auth/login', method: 'POST', data: req }),
+      query: req => ({ url: '/auth/login', method: HTTP_METHOD.POST, data: req }),
     }),
   }),
 });
 
-export const { useLoginMutation } = authenAPI;
+export const { useLoginMutation } = authAPI;

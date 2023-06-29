@@ -10,7 +10,7 @@ export class LoginRequestDto {
   password!: string;
 }
 
-export class SignupRequestDto extends LoginRequestDto {
+export class RegisterRequestDto extends LoginRequestDto {
   @Expose({ name: 'full_name' })
   fullName!: string;
 }
