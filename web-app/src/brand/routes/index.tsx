@@ -1,6 +1,6 @@
 import { RouteObject, useRoutes } from 'react-router-dom';
-import Layout from '../../design/components/templates/index';
 import '../../design/styles/index.scss';
+import Layout from '../../design/templates/index';
 import Login from '../pages/login-page/index';
 import Registration from '../pages/register-page/index';
 
@@ -14,7 +14,7 @@ const appRoutes: RouteObject[] = [
         element: <Login />,
       },
       {
-        path: '/signup',
+        path: '/register',
         element: <Registration />,
       },
     ],

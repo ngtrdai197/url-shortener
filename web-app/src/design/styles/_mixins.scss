@@ -1,0 +1,80 @@
+@mixin pc() {
+  @media (min-width: $SP-WIDTH + 1px) {
+    @content;
+  }
+}
+
+@mixin sp() {
+  @media (max-width: $SP-WIDTH) {
+    @content;
+  }
+}
+
+/*
+  Convert the line-height & letter-spacing px values into relative value.
+  px-based values can be extracted from Abstract. Always use this to define line-height & letter-spacing
+  If cutLineSpace=true, the spacing the top of first-line & the bottom of last-line caused by line-height will be killed.
+ */
+@mixin u-fz($fzPx: false, $lineHeightPx: false, $letterSpacingPx: false, $cutLineSpace: false) {
+  @if ($fzPx) {
+    font-size: $fzPx + px;
+  }
+
+  @if ($lineHeightPx) {
+    line-height: ($lineHeightPx / $fzPx);
+  }
+
+  @if ($letterSpacingPx) {
+    letter-spacing: ($letterSpacingPx / $fzPx) + em;
+  }
+
+  @if ($cutLineSpace) {
+    &::before,
+    &::after {
+      display: block;
+      overflow: hidden;
+      content: '';
+    }
+
+    $_marginVal: ($lineHeightPx - $fzPx) * -0.5;
+
+    &::before {
+      margin-bottom: $_marginVal + px;
+    }
+
+    &::after {
+      margin-top: $_marginVal + px;
+    }
+  }
+}
+
+@mixin u-fw-b {
+  font-weight: 700;
+}
+
+@mixin u-fw-lb {
+  font-weight: 600;
+}
+
+@mixin u-fw-m {
+  font-weight: 500;
+}
+
+@mixin u-fw-n {
+  font-weight: 400;
+}
+
+@mixin u-fw-l {
+  font-weight: 300;
+}
+
+/* Keep the aspect-ratio of area. This should be used with background-image */
+@mixin aspectRatio($width: 1, $height: 1) {
+  position: relative;
+
+  &::before {
+    display: block;
+    padding-bottom: ($height / $width) * 100%;
+    content: '';
+  }
+}

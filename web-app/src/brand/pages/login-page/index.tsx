@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { LoginRequestDto } from '../../models/auth.dto';
-import { useLoginMutation } from '../../services/authen';
+import { useLoginMutation } from '../../services/auth.service';
 
 const schema = yup.object().shape({
   username: yup.string().required('Username is required').min(6, 'Username must be at least 6 characters'),
@@ -105,7 +105,7 @@ const Login: React.FC = () => {
           <span className="font-medium">
             Do not have an account ?{' '}
             <span className=" text-purple-600 hover:underline">
-              <Link to="/signup">Sign up</Link>
+              <Link to="/register">Register</Link>
             </span>
           </span>
         </p>

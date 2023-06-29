@@ -18,7 +18,7 @@ axios.defaults.baseURL = environment.VITE_BASE_ENDPOINT;
 export type AxiosConfigWithInterceptedSetting = AxiosRequestConfig & {
   _retry?: boolean;
   _isSkipCommonError?: boolean;
-  _isSkipAdditionlAuthError?: boolean;
+  _isSkipAdditionalAuthError?: boolean;
   url?: string;
 };
 

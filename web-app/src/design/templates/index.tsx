@@ -1,16 +1,15 @@
 import { Outlet } from 'react-router-dom';
-import { useAppSelector } from '../../../brand/store/hook';
-import { LoadingSpinner } from '../loading-spinner';
-import Main from '../organisms/';
+import { useAppSelector } from '../../brand/store/hook';
+import { LoadingSpinner } from '../components/loading-spinner';
 
 function Layout() {
   const { isLoading } = useAppSelector(state => state.loadingSpinner);
 
   return (
-    <Main>
+    <main>
       <LoadingSpinner open={isLoading} />
       <Outlet />
-    </Main>
+    </main>
   );
 }
 
