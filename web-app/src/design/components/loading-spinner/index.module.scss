@@ -1,0 +1,17 @@
+.loading-spinner {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  background-color: rgba($color: $color-white, $alpha: 80%);
+  background-image: url('/assets/images/spinner.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &--opened {
+    z-index: 99999;
+    display: block;
+  }
+}
