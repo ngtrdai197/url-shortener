@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import sassGlobImports from 'vite-plugin-sass-glob-import';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,7 +9,7 @@ export default defineConfig({
     outDir: '../dist',
     emptyOutDir: true,
   },
-  plugins: [react()],
+  plugins: [react(), sassGlobImports()],
   server: {
     host: true,
     strictPort: true,
