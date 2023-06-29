@@ -8,6 +8,13 @@
   "commitConvention": "angular",
   "contributors": [
     {
+      "login": "ngtrdai197",
+      "name": "Dai Nguyen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37446552?v=4",
+      "profile": "https://nguyendai.dev/",
+      "contributions": [
+        "code"
+      ],
       "login": "4DVN-ToanNT",
       "name": "ToanNT",
       "avatar_url": "https://avatars.githubusercontent.com/u/123945622?v=4",
