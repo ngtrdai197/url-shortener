@@ -231,8 +231,6 @@ $ make build
 $ make up
 ```
 
-## Contributors ✨
-
 ...
 
 ## The project is still in progress (WIP :rocket:)
