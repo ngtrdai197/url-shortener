@@ -206,7 +206,7 @@ localhost:8088/r?v=Fx4r2XiGEAA
 
 <hr />
 
-## Web app (WIP)
+## Web App
 
 ### Create .env file
 
@@ -234,6 +234,10 @@ $ make build
 $ make up
 ```
 
+...
+
+## The project is still in progress (WIP :rocket:)
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -253,17 +257,21 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-## Contributors
-
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://nguyendai.dev/"><img src="https://avatars.githubusercontent.com/u/37446552?v=4?s=100" width="100px;" alt="Dai Nguyen"/><br /><sub><b>Dai Nguyen</b></sub></a><br /><a href="https://github.com/ngtrdai197/url-shortener/commits?author=ngtrdai197" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/4DVN-ToanNT"><img src="https://avatars.githubusercontent.com/u/123945622?v=4?s=100" width="100px;" alt="ToanNT"/><br /><sub><b>ToanNT</b></sub></a><br /><a href="https://github.com/ngtrdai197/url-shortener/commits?author=4DVN-ToanNT" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-...
-
-## The project is still in progress (WIP :rocket:)
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
