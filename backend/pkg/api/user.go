@@ -3,7 +3,7 @@ package api
 import (
 	"database/sql"
 	"errors"
-	"log"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,6 +12,7 @@ import (
 	db "github.com/ngtrdai197/url-shortener/db/sqlc"
 	"github.com/ngtrdai197/url-shortener/pkg/token"
 	util "github.com/ngtrdai197/url-shortener/utils"
+	"github.com/rs/zerolog/log"
 )
 
 type createUserRequest struct {
@@ -40,12 +41,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 	var req createUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, requestBodyInvalid, nil, errorResponse(err)))
 		return
 	}
+	fmt.Print(req)
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
-		ginInternalError(ctx, err)
+		log.Err(err).Msg("createUser.HashPassword occurs error")
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse(err)))
 		return
 	}
 
@@ -57,18 +60,17 @@ func (server *Server) createUser(ctx *gin.Context) {
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
 		if pgError, ok := err.(*pq.Error); ok {
-			log.Printf("PG Error: %v", pgError.Code.Name())
+			log.Err(err).Msgf("PG Error: %v", pgError.Code.Name())
 			switch pgError.Code.Name() {
 			case "unique_violation":
-				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				returnGinError(ctx, http.StatusForbidden, transformApiResponse(forbiddenCode, "username already created", nil, errorResponse(err)))
 				return
 			}
 		}
-		ginInternalError(ctx, err)
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse(err)))
 		return
 	}
-	response := newUserResponse(user)
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, transformApiResponse(successCode, "create new user successfully", newUserResponse(user), nil))
 }
 
 func (s *Server) getProfile(ctx *gin.Context) {
@@ -80,7 +82,7 @@ func (s *Server) getProfile(ctx *gin.Context) {
 			ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("cannot get profile with this credentials")))
 			return
 		}
-		ginInternalError(ctx, err)
+		returnGinError(ctx, http.StatusUnauthorized, somethingWentWrong)
 		return
 	}
 	ctx.JSON(http.StatusOK, newUserResponse(user))
