@@ -1,0 +1,9 @@
+.t-auth-form {
+  &__container {
+    max-width: 343px;
+
+    @include pc {
+      max-width: 634px;
+    }
+  }
+}

@@ -1,1 +1,1 @@
-export const STORAGE_PREFIX = 'URL_SHORTEN';
+export const STORAGE_PREFIX = 'URL_SHORTENER_';
