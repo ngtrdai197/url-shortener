@@ -11,7 +11,10 @@ export const store = configureStore({
     [authAPI.reducerPath]: authAPI.reducer,
     [usersAPI.reducerPath]: usersAPI.reducer,
   },
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(authAPI.middleware, usersAPI.middleware),
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(authAPI.middleware, usersAPI.middleware),
 });
 
 setupListeners(store.dispatch);

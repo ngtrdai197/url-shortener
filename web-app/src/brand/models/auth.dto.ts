@@ -26,7 +26,7 @@ export class AuthenticateResponseDto {
   accessTokenExpiresAt!: Date;
 
   @Expose({ name: 'refresh_token' })
-  refresh_token!: string;
+  refreshToken!: string;
 
   @Expose({ name: 'refresh_token_expires_at' })
   refreshTokenExpiresAt!: Date;

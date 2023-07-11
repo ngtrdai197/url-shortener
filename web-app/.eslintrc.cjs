@@ -84,6 +84,7 @@ module.exports = {
       rules: {
         // Disable ESLint default rules
         'no-use-before-define': 0,
+        'consistent-return': 0,
 
         // Import plugin rules
         'import/no-relative-parent-imports': 0,
