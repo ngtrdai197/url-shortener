@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"math/big"
 	"net/http"
 	"time"
@@ -117,24 +118,24 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	var req createUrlRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, requestBodyInvalid, nil, errorResponse((err))))
 		return
 	}
 	foundUrl, err := s.store.GetUrlByLong(ctx, req.LongUrl)
 	if err == nil {
-		ctx.JSON(http.StatusOK, newBaseUrlResponse(foundUrl))
+		ctx.JSON(http.StatusOK, transformApiResponse(successCode, "create new url successfully", newBaseUrlResponse(foundUrl), nil))
 		return
 	}
 
 	if err != sql.ErrNoRows {
-		ginInternalError(ctx, err)
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse((err))))
 		return
 	}
 
 	node, err := snowflake.NewNode(97)
 	if err != nil {
 		log.Error().Msgf("new node error=%v", err)
-		ginInternalError(ctx, err)
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse((err))))
 		return
 	}
 
@@ -152,13 +153,12 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	}
 	createdUrl, err := s.store.CreateUrl(ctx, arg)
 	if err != nil {
-		log.Error().Msgf("create url with error=%v", err)
-		ginInternalError(ctx, err)
+		log.Err(err).Msg("CreateUrl.s.store.CreateUrl error")
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse((err))))
 		return
 	}
 
-	response := newBaseUrlResponse(createdUrl)
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, transformApiResponse(successCode, "create new url successfully", newBaseUrlResponse(createdUrl), nil))
 }
 
 func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
@@ -168,7 +168,7 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 	}
 
 	if err := ctx.BindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(internalCode, requestQueryInvalid, nil, errorResponse((err))))
 		return
 	}
 
@@ -182,14 +182,15 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 		if err == sql.ErrNoRows {
 			urls = []db.GetListURLsOfUserRow{}
 		} else {
-			ginInternalError(ctx, err)
+			log.Err(err).Msg("GetListURLsOfUser.err != sql.ErrNoRows")
+			returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse((err))))
 			return
 		}
 	}
 
 	totalUrls, err := s.store.GetCountURLsOfUser(ctx, authPayload.UserID)
 	if err != nil {
-		ginInternalError(ctx, err)
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, "get count url of user occurs error", nil, errorResponse((err))))
 		return
 	}
 
@@ -207,7 +208,7 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 	} else {
 		response.Data = []urlsResponse{}
 	}
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, transformApiResponse(successCode, "get list urls of user successfully", response, nil))
 }
 
 func (s *Server) GetListURLs(ctx *gin.Context) {
@@ -217,7 +218,7 @@ func (s *Server) GetListURLs(ctx *gin.Context) {
 	}
 
 	if err := ctx.BindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, requestQueryInvalid, nil, errorResponse((err))))
 		return
 	}
 
@@ -229,14 +230,15 @@ func (s *Server) GetListURLs(ctx *gin.Context) {
 		if err == sql.ErrNoRows {
 			urls = []db.GetListURLsRow{}
 		} else {
-			ginInternalError(ctx, err)
+			log.Err(err).Msg("GetListURLs.err != sql.ErrNoRows")
+			returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse((err))))
 			return
 		}
 	}
 
 	totalUrls, err := s.store.GetCountURLs(ctx)
 	if err != nil {
-		ginInternalError(ctx, err)
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, "get count list urls occurs error", nil, errorResponse((err))))
 		return
 	}
 
@@ -254,23 +256,24 @@ func (s *Server) GetListURLs(ctx *gin.Context) {
 	} else {
 		response.Data = []urlsResponse{}
 	}
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, transformApiResponse(successCode, "get list urls successfully", response, nil))
 }
 
 func (s *Server) RedirectUrl(ctx *gin.Context) {
 	var req redirectUrlRequest
 
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, requestQueryInvalid, nil, errorResponse((err))))
 		return
 	}
 
 	url, err := s.store.GetUrlByShort(ctx, req.ShortUrl)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(pqErr))
+		if pgErr, ok := err.(*pq.Error); ok {
+			log.Err(pgErr).Msgf("RedirectUrl.GetUrlByShort error=%s", pgErr.Error())
+			returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, errorResponse(fmt.Errorf(somethingWentWrong)), nil))
 		}
-		ctx.JSON(http.StatusNotFound, errorResponse(err))
+		returnGinError(ctx, http.StatusNotFound, transformApiResponse(notFoundCode, "cannot found url", errorResponse(err), nil))
 	}
 
 	http.Redirect(ctx.Writer, ctx.Request, url.LongUrl, http.StatusSeeOther)

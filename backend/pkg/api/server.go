@@ -86,6 +86,6 @@ func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
 
-func ginInternalError(ctx *gin.Context, err error) {
-	ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+func returnGinError(ctx *gin.Context, httpErrorCode int, err interface{}) {
+	ctx.JSON(httpErrorCode, err)
 }
