@@ -1,6 +1,9 @@
 # Url Shortener :tada:
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Build a service for shortening url, idea will generate a unique ID (Twitter snowflake) and convert that unique id (base10) to base64
@@ -46,7 +49,7 @@ make migrateup
 
 ```bash
 ## Create user
-curl --location 'http://localhost:8088/users' \
+curl --location 'http://localhost:8088/auth/register' \
 --header 'Content-Type: application/json' \
 --data '{
     "username":"johndoe",
