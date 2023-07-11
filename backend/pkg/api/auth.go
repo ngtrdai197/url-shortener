@@ -46,7 +46,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 
 	user, err := server.store.GetUser(ctx, req.Username)
 
-	credentialsError := errors.New("Credentials username or password incorrect")
+	credentialsError := errors.New("credentials username or password incorrect")
 
 	if err != nil {
 		if err == sql.ErrNoRows {

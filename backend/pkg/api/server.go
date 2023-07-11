@@ -50,13 +50,13 @@ func (s *Server) setupRouter(c *config.Config) {
 			"message": "pong",
 		})
 	})
-	r.POST("/users", s.createUser)
 	r.GET("/r", s.RedirectUrl)
 
 	authRoutes := r.Group("/auth")
 	{
 		authRoutes.POST("/login", s.loginUser)
 		authRoutes.POST("/renew-token", s.renewAccessToken)
+		authRoutes.POST("/register", s.createUser)
 	}
 
 	authenticatedRoutes := r.Group("/")
@@ -65,6 +65,14 @@ func (s *Server) setupRouter(c *config.Config) {
 		authenticatedRoutes.POST("/urls", s.CreateUrl)
 		authenticatedRoutes.GET("/urls", s.GetListURLsOfUser)
 		authenticatedRoutes.GET("/all-urls", s.GetListURLs)
+
+		authenticatedRoutes.GET("/profile", s.getProfile)
+	}
+
+	userRoutes := r.Group("/users")
+	userRoutes.Use(authMiddleware(s.tokenMaker))
+	{
+		userRoutes.GET("/profile", s.getProfile)
 	}
 
 	s.router = r

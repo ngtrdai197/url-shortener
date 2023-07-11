@@ -20,6 +20,7 @@ type Querier interface {
 	GetUrlByLong(ctx context.Context, longUrl string) (Url, error)
 	GetUrlByShort(ctx context.Context, shortUrl string) (Url, error)
 	GetUser(ctx context.Context, username string) (User, error)
+	GetUserById(ctx context.Context, id int64) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

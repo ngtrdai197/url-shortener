@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -8,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 	db "github.com/ngtrdai197/url-shortener/db/sqlc"
+	"github.com/ngtrdai197/url-shortener/pkg/token"
 	util "github.com/ngtrdai197/url-shortener/utils"
 )
 
@@ -66,4 +69,19 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 	response := newUserResponse(user)
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (s *Server) getProfile(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	user, err := s.store.GetUserById(ctx, authPayload.UserID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("cannot get profile with this credentials")))
+			return
+		}
+		ginInternalError(ctx, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, newUserResponse(user))
 }
