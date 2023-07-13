@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -41,14 +40,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 	var req createUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, requestBodyInvalid, nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(RequestBodyInvalidCode, requestBodyInvalidMsg, nil))
 		return
 	}
 	fmt.Print(req)
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
 		log.Err(err).Msg("createUser.HashPassword occurs error")
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
 		return
 	}
 
@@ -63,14 +62,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 			log.Err(err).Msgf("PG Error: %v", pgError.Code.Name())
 			switch pgError.Code.Name() {
 			case "unique_violation":
-				returnGinError(ctx, http.StatusForbidden, transformApiResponse(forbiddenCode, "username already created", nil, errorResponse(err)))
+				returnGinError(ctx, http.StatusForbidden, transformApiResponse(RecordAlreadyExistsCode, "username already created", nil))
 				return
 			}
 		}
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
 		return
 	}
-	ctx.JSON(http.StatusOK, transformApiResponse(successCode, "create new user successfully", newUserResponse(user), nil))
+	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "create new user successfully", newUserResponse(user)))
 }
 
 func (s *Server) getProfile(ctx *gin.Context) {
@@ -79,11 +78,12 @@ func (s *Server) getProfile(ctx *gin.Context) {
 	user, err := s.store.GetUserById(ctx, authPayload.UserID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("cannot get profile with this credentials")))
+			returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(CredentialsCode, "cannot get profile with this credentials", nil))
 			return
 		}
-		returnGinError(ctx, http.StatusUnauthorized, somethingWentWrong)
+		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
 		return
 	}
-	ctx.JSON(http.StatusOK, newUserResponse(user))
+	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "get profile user successfully", newUserResponse(user)))
+
 }

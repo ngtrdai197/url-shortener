@@ -45,6 +45,29 @@ brew install golang-migrate
 make migrateup
 ```
 
+### Result code definition
+
+```go
+const (
+	SuccessCode              = 1
+	RequestBodyInvalidCode   = 2
+	CreateAccessTokenCode    = 3
+	NotFoundCode             = 4
+	SomethingWentWrongCode   = 5
+	CredentialsCode          = 6
+	CreateRefreshTokenCode   = 7
+	CreateSessionCode        = 8
+	VerifyRefreshTokenCode   = 9
+	CannotFoundSession       = 10
+	BlockSessionCode         = 11
+	IncorrectSessionUserCode = 12
+	MismatchedSessionCode    = 13
+	RequestBindQueryCode     = 14
+	RecordAlreadyExistsCode  = 15
+	ExpiredSessionCode       = 16
+)
+```
+
 ### How can I authenticate?
 
 ```bash
@@ -61,10 +84,14 @@ curl --location 'http://localhost:8088/auth/register' \
 ```json
 // Create user - response
 {
-  "id": 1,
-  "username": "johndoe",
-  "full_name": "John Doe",
-  "created_at": "2023-06-12T12:20:40.20189Z"
+  "result_code": 1,
+  "message": "create new user successfully",
+  "data": {
+    "id": 1,
+    "username": "johndoe",
+    "full_name": "John Doe",
+    "created_at": "2023-06-12T12:20:40.20189Z"
+  }
 }
 ```
 
@@ -80,16 +107,14 @@ curl --location 'http://localhost:8088/auth/login' \
 ```json
 // Login - response
 {
-  "session_id": "103188f9-5ce8-49ef-9885-b60462665265",
-  "access_token": "v2.local.k1kqn77ryuA06WgAYjXPVTpqiGPBkxkofzBbcHfVO79dIbghRQ4A7gPnGrpAsbACQ66wPhC8gtfmN7Gq6sgv7eTuIWCusS2ROFb-2x8ErXRkXK9plQ1X3_ueyHdFVy7I_LlQmrYMSIwu_KriL--27ipAM2h8KKYd7yGZHyBf5rSn1LiG7EMaJJrZ9y2UfN69VSSE1M-Gt9QLNhkybnejh1V-9OmaNs5Fj0iKKf6ZazRs4MWdLqNpkyUe.bnVsbA",
-  "access_token_expires_at": "2023-06-12T13:20:45.25644635Z",
-  "refresh_token": "v2.local.ySXnTTRfQlw9AVP46eXkY6PZqC7IuZJn1ljk7QymSNb1ASTmPuPgUg3vpG63mYJR4gln9iDM7FJwgBdb4DeFjQwVh8vkIu5w6pvUfdZc3XXfAc8jVoHPXao4ZayOgGeZTGfEQkMchFVIXAXEC26lS9oU6l_-5vHOFthLbvoxJ0It9-B1OTOzZvarC8tpJJMdGEhzCm31kFryk0DCmwItQUdADZZVqHD-qcimeuCN4H0dArxOY_GLtLIQsDQ.bnVsbA",
-  "refresh_token_expires_at": "2023-06-12T13:20:45.256509725Z",
-  "user": {
-    "id": 1,
-    "username": "johndoe",
-    "full_name": "John Doe",
-    "created_at": "2023-06-12T12:20:40.20189Z"
+  "result_code": 1,
+  "message": "login successfully",
+  "data": {
+    "session_id": "dc34aa55-0c7e-49f1-87ad-d5e3bfcb050d",
+    "access_token": "v2.local.eUVOrIiIFnsWyOiq4ai8KUAK7olncqz9hncbw2j0av6sKYh7x-kt2HeMNEO4kd07RSJa94ct2Wukd3H0Eoc42AtNiaZoF1SOzox8sf89ExgE8OdOzSOjuva1V9l-YxDn3sy764yIwv1fsLil6sI6FkLRK8TLR3W8yKaHwrdcLNmfnxPNfHZnPfIl9BrsIUuOUPaUZK71JHp6znfKbBAIkvXAPxBx75MxC_ypS88oBhc29Bbl1F7P4Hv6efQ.bnVsbA",
+    "access_token_expires_at": "2023-07-13T09:31:56.532346803Z",
+    "refresh_token": "v2.local.4yy2aaiTpSmWDNWBzcB64Z-CS6A1EgrlE7NyPIDJlF2vTVxS5ZO5wlB4fJMOgV2EFqIgcnavmnaIUkGMPYX0bSSkSxGe9od_5Hil85TMi45cHQj0NbTp5TQE7WwCJTX3CZ8I1ppqYxCQAqxLB6aCMx0yXOZNIDpvfK3_WgmWi0wmfdIUkCBolIFB2Bg1o2hOMuxd2FV_cpvEaSLEH5VNu7E_xDlUe7_2bZVyHlFY5tt0stLyOIdMzvNlAdI.bnVsbA",
+    "refresh_token_expires_at": "2023-07-13T10:16:56.532424687Z"
   }
 }
 ```
@@ -106,8 +131,12 @@ curl --location 'http://localhost:8088/auth/renew-token' \
 ```json
 // Refresh token response
 {
-  "access_token": "v2.local.U7S1VeVHXpsnBaRcBBSkVfLWUfCVbKtoBcUbDzopm3zcXgILRdon68wArpF9-B4Wmzc-PPcm8ZHc2sXSpA27GcczzmpMD1EpMV27eyrzl8qTpcIzTo1L0jrJJ3tZyDVRae4krYeK9FCVdfDtkkCL-1lFxZf5pyKuVxdFTKEwqXFjpTUJw-0P-i7z60Jj9TgdskOMs3dF9OOucaSX0qkFeCft7cxaFtldXqtqjA5vxi-QHlQWZ87cWcDCEW46Kzl9.bnVsbA",
-  "access_token_expires_at": "2023-06-27T01:28:01.282398+07:00"
+  "result_code": 1,
+  "message": "renew access token successfully",
+  "data": {
+    "access_token": "v2.local.ZVGZ-7K2CvTBIs3HYL8fxC6S2fHIKU06iLuy0vBxF9kLaz5fmWjzbEpMoqFq6jSAw_MD5sszRih18HCBmGcvCk99fFvt5YiASzS5rdNGIE6-8nEGOf0GmJNpTlqmQl1ZvdfxbCNMLCu1gip5eb2JQrSY51AMd_AIHUbNlVUxZuBFxuJUlNhdtqsUKiNg-gDtq-SW0iwKZLckbpn2p9TFCoG6EA6E5gTi602YfCPMGkw4XoO-CCJF5BYYdQc.bnVsbA",
+    "access_token_expires_at": "2023-07-13T09:37:19.298197513Z"
+  }
 }
 ```
 
@@ -127,12 +156,16 @@ curl --location 'http://localhost:8088/urls' \
 ```json
 // Response
 {
-  "id": 1668231887958970368,
-  "user_id": 1,
-  "short_url": "FybAEDzGEAA",
-  "long_url": "https://www.youtube.com/watch?v=yc5gRiWGjT0&ab_channel=B%C3%A1cs%C4%A9H%E1%BA%A3i",
-  "description": "Bác sĩ Hải - Rolling Ball | New Mixtape 2021 | House Lak - Viet Deep",
-  "created_at": "2023-06-12T12:20:50.997353Z"
+  "result_code": 1,
+  "message": "create new url successfully",
+  "data": {
+    "id": 1679419804362346496,
+    "user_id": 1,
+    "short_url": "F05_agPGEAA",
+    "long_url": "https://www.youtube.com/watch?v=A-tX5PI3V0o&ab_channel=AndreeRightHand",
+    "description": "Andree Right Hand - Chơi Như Tụi Mỹ | Official MV",
+    "created_at": "2023-07-13T09:17:38.12884Z"
+  }
 }
 ```
 
@@ -146,26 +179,30 @@ curl --location 'http://localhost:8088/urls?page=1&limit=10' \
 ```json
 // Response
 {
-  "paginate": {
-    "limit": 10,
-    "page": 1,
-    "total": 1
-  },
-  "data": [
-    {
-      "id": 1668231887958970368,
-      "user": {
-        "id": 1,
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "created_at": "2023-06-12T12:20:40.20189Z"
-      },
-      "short_url": "FybAEDzGEAA",
-      "long_url": "https://www.youtube.com/watch?v=yc5gRiWGjT0&ab_channel=B%C3%A1cs%C4%A9H%E1%BA%A3i",
-      "description": "Bác sĩ Hải - Rolling Ball | New Mixtape 2021 | House Lak - Viet Deep",
-      "created_at": "2023-06-12T12:20:50.997353Z"
-    }
-  ]
+  "result_code": 1,
+  "message": "get list urls of user successfully",
+  "data": {
+    "paginate": {
+      "limit": 10,
+      "page": 1,
+      "total": 1
+    },
+    "data": [
+      {
+        "id": 1679419804362346496,
+        "user": {
+          "id": 1,
+          "username": "dainguyen",
+          "full_name": "Dai Nguyen",
+          "created_at": "2023-07-13T09:13:35.065909Z"
+        },
+        "short_url": "F05_agPGEAA",
+        "long_url": "https://www.youtube.com/watch?v=A-tX5PI3V0o&ab_channel=AndreeRightHand",
+        "description": "Andree Right Hand - Chơi Như Tụi Mỹ | Official MV",
+        "created_at": "2023-07-13T09:17:38.12884Z"
+      }
+    ]
+  }
 }
 ```
 
@@ -179,26 +216,30 @@ curl --location 'http://localhost:8088/all-urls?page=1&limit=10' \
 ```json
 // Response
 {
-  "paginate": {
-    "limit": 10,
-    "page": 1,
-    "total": 1
-  },
-  "data": [
-    {
-      "id": 1668231887958970368,
-      "user": {
-        "id": 1,
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "created_at": "2023-06-12T12:20:40.20189Z"
-      },
-      "short_url": "FybAEDzGEAA",
-      "long_url": "https://www.youtube.com/watch?v=yc5gRiWGjT0&ab_channel=B%C3%A1cs%C4%A9H%E1%BA%A3i",
-      "description": "Bác sĩ Hải - Rolling Ball | New Mixtape 2021 | House Lak - Viet Deep",
-      "created_at": "2023-06-12T12:20:50.997353Z"
-    }
-  ]
+  "result_code": 1,
+  "message": "get list urls successfully",
+  "data": {
+    "paginate": {
+      "limit": 10,
+      "page": 1,
+      "total": 1
+    },
+    "data": [
+      {
+        "id": 1679419804362346496,
+        "user": {
+          "id": 1,
+          "username": "dainguyen",
+          "full_name": "Dai Nguyen",
+          "created_at": "2023-07-13T09:13:35.065909Z"
+        },
+        "short_url": "F05_agPGEAA",
+        "long_url": "https://www.youtube.com/watch?v=A-tX5PI3V0o&ab_channel=AndreeRightHand",
+        "description": "Andree Right Hand - Chơi Như Tụi Mỹ | Official MV",
+        "created_at": "2023-07-13T09:17:38.12884Z"
+      }
+    ]
+  }
 }
 ```
 

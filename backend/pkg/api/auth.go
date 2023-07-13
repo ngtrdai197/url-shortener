@@ -2,8 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -20,12 +18,11 @@ type loginUserRequest struct {
 }
 
 type loginUserResponse struct {
-	SessionID             uuid.UUID    `json:"session_id"`
-	AccessToken           string       `json:"access_token"`
-	AccessTokenExpiresAt  time.Time    `json:"access_token_expires_at"`
-	RefreshToken          string       `json:"refresh_token"`
-	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
-	User                  userResponse `json:"user"`
+	SessionID             uuid.UUID `json:"session_id"`
+	AccessToken           string    `json:"access_token"`
+	AccessTokenExpiresAt  time.Time `json:"access_token_expires_at"`
+	RefreshToken          string    `json:"refresh_token"`
+	RefreshTokenExpiresAt time.Time `json:"refresh_token_expires_at"`
 }
 
 type renewAccessTokenRequest struct {
@@ -41,27 +38,26 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, requestBodyInvalid, nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(RequestBodyInvalidCode, requestBodyInvalidMsg, nil))
 		return
 	}
 
 	user, err := server.store.GetUser(ctx, req.Username)
 
 	credentialsMsg := "credentials username or password incorrect"
-	credentialsError := errors.New(credentialsMsg)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, "cannot found user", nil, errorResponse(credentialsError)))
+			returnGinError(ctx, http.StatusBadRequest, transformApiResponse(CreateAccessTokenCode, "cannot found user", nil))
 			return
 		}
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse(credentialsError)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
 		return
 	}
 
 	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
-		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, credentialsMsg, nil, errorResponse(credentialsError)))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(CredentialsCode, credentialsMsg, nil))
 		return
 	}
 
@@ -70,7 +66,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		server.config.AccessTokenDuration,
 	)
 	if err != nil {
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, "create access token occurs error", nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(CreateAccessTokenCode, "create access token occurs error", nil))
 		return
 	}
 
@@ -79,7 +75,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		server.config.RefreshTokenDuration,
 	)
 	if err != nil {
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, "create refresh token occurs error", nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(CreateRefreshTokenCode, "create refresh token occurs error", nil))
 		return
 	}
 
@@ -91,7 +87,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		ExpiresAt:    refreshPayload.ExpiredAt,
 	})
 	if err != nil {
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, "create session occurs error", nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(CreateSessionCode, "create session occurs error", nil))
 		return
 	}
 
@@ -101,21 +97,20 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
-		User:                  newUserResponse(user),
 	}
-	ctx.JSON(http.StatusOK, transformApiResponse(successCode, "login successfully", rsp, nil))
+	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "login successfully", rsp))
 }
 
 func (server *Server) renewAccessToken(ctx *gin.Context) {
 	var req renewAccessTokenRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(badRequestCode, requestBodyInvalid, nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(RequestBodyInvalidCode, requestBodyInvalidMsg, nil))
 		return
 	}
 
 	refreshPayload, err := server.tokenMaker.VerifyToken(req.RefreshToken)
 	if err != nil {
-		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(unauthorizedCode, "verify refresh token occurs error", nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(VerifyRefreshTokenCode, "verify refresh token occurs error", nil))
 		return
 	}
 
@@ -123,34 +118,30 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Err(err).Msg("renewAccessToken.GetSession cannot found session")
-			returnGinError(ctx, http.StatusNotFound, transformApiResponse(unauthorizedCode, "cannot found session", nil, errorResponse(fmt.Errorf("session is not found"))))
+			returnGinError(ctx, http.StatusNotFound, transformApiResponse(CannotFoundSession, "cannot found session", nil))
 			return
 		}
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
 		return
 	}
 
 	if session.IsBlocked {
-		msg := "blocked session"
-		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(unauthorizedCode, msg, nil, errorResponse(fmt.Errorf(msg))))
+		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(BlockSessionCode, "blocked session", nil))
 		return
 	}
 
 	if session.UserID != refreshPayload.UserID {
-		msg := "incorrect session user"
-		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(unauthorizedCode, msg, nil, errorResponse(fmt.Errorf(msg))))
+		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(IncorrectSessionUserCode, "incorrect session user", nil))
 		return
 	}
 
 	if session.RefreshToken != req.RefreshToken {
-		msg := "mismatched session token"
-		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(unauthorizedCode, msg, nil, errorResponse(fmt.Errorf(msg))))
+		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(MismatchedSessionCode, "mismatched session token", nil))
 		return
 	}
 
 	if time.Now().After(session.ExpiresAt) {
-		msg := "expired session"
-		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(unauthorizedCode, msg, nil, errorResponse(fmt.Errorf(msg))))
+		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(ExpiredSessionCode, "expired session", nil))
 		return
 	}
 
@@ -159,7 +150,7 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		server.config.AccessTokenDuration,
 	)
 	if err != nil {
-		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(internalCode, somethingWentWrong, nil, errorResponse(err)))
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
 		return
 	}
 
@@ -167,5 +158,5 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: accessPayload.ExpiredAt,
 	}
-	ctx.JSON(http.StatusOK, transformApiResponse(successCode, "renew access token successfully", rsp, nil))
+	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "renew access token successfully", rsp))
 }

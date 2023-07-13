@@ -2,7 +2,10 @@
 .PHONY:
 
 build:
-	docker-compose up --build
+	docker compose build
 
 up:
-	docker-compose up
+	docker compose up -d
+
+run:
+	docker compose up --build -d
