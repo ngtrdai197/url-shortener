@@ -109,6 +109,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(RequestBodyInvalidCode, requestBodyInvalidMsg, nil))
 		return
 	}
+
 	foundUrl, err := s.store.GetUrlByLong(ctx, req.LongUrl)
 	if err == nil {
 		ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "create new url successfully", newBaseUrlResponse(foundUrl)))
@@ -131,7 +132,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 	id := node.Generate().Int64()
 
 	// Encode the ID as a base64 string to make it shorter.
-	shortUrl := base64.RawURLEncoding.EncodeToString(big.NewInt(int64(id)).Bytes())
+	shortUrl := base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 	arg := db.CreateUrlParams{
 		ID:          id,
 		ShortUrl:    shortUrl,

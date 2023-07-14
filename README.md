@@ -68,6 +68,23 @@ const (
 )
 ```
 
+### Generate key for paseto token
+
+```bash
+# Create a new folder for store pair keys
+mkdir keys && cd keys
+```
+
+```bash
+# Create private key
+openssl genrsa -out private_key.pem 1024
+```
+
+```bash
+# Generate a public key from private
+openssl rsa -in private_key.pem -pubout > public_key.pub
+```
+
 ### How can I authenticate?
 
 ```bash
