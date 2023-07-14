@@ -25,20 +25,20 @@ func NewServer(c *config.Config) *Server {
 		log.Fatal().Err(err).Msg("cannot connect db")
 	}
 
-	tokenMaker, err := token.NewPasetoMaker(c.TokenSymmetricKey)
+	tokenMaker, err := token.NewPasetoMaker(c)
 	if err != nil {
 		log.Fatal().Err(err).Msgf("cannot create token maker: %v", err)
 	}
 
 	store := db.NewStore(conn)
 	server := &Server{config: c, store: store, tokenMaker: tokenMaker}
-	server.setupRouter(c)
+	server.setupRouter()
 
 	return server
 }
 
-func (s *Server) setupRouter(c *config.Config) {
-	gin.SetMode((gin.ReleaseMode))
+func (s *Server) setupRouter() {
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
 		log.Printf("endpoint %v %v %v %v", httpMethod, absolutePath, handlerName, nuHandlers)
@@ -50,6 +50,11 @@ func (s *Server) setupRouter(c *config.Config) {
 			"message": "pong",
 		})
 	})
+
+	r.GET("/pk", func(c *gin.Context) {
+		c.JSON(http.StatusOK, transformApiResponse(SuccessCode, "ok", s.config.PublicKey))
+	})
+
 	r.GET("/r", s.RedirectUrl)
 
 	authRoutes := r.Group("/auth")

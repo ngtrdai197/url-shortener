@@ -34,7 +34,7 @@ type renewAccessTokenResponse struct {
 	AccessTokenExpiresAt time.Time `json:"access_token_expires_at"`
 }
 
-func (server *Server) loginUser(ctx *gin.Context) {
+func (s *Server) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -42,7 +42,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	user, err := server.store.GetUser(ctx, req.Username)
+	user, err := s.store.GetUser(ctx, req.Username)
 
 	credentialsMsg := "credentials username or password incorrect"
 
@@ -61,25 +61,25 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
+	accessToken, accessPayload, err := s.tokenMaker.CreateToken(
 		user.ID,
-		server.config.AccessTokenDuration,
+		s.config.AccessTokenDuration,
 	)
 	if err != nil {
 		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(CreateAccessTokenCode, "create access token occurs error", nil))
 		return
 	}
 
-	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
+	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(
 		user.ID,
-		server.config.RefreshTokenDuration,
+		s.config.RefreshTokenDuration,
 	)
 	if err != nil {
 		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(CreateRefreshTokenCode, "create refresh token occurs error", nil))
 		return
 	}
 
-	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
+	session, err := s.store.CreateSession(ctx, db.CreateSessionParams{
 		ID:           refreshPayload.ID,
 		UserID:       user.ID,
 		RefreshToken: refreshToken,
@@ -101,20 +101,20 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "login successfully", rsp))
 }
 
-func (server *Server) renewAccessToken(ctx *gin.Context) {
+func (s *Server) renewAccessToken(ctx *gin.Context) {
 	var req renewAccessTokenRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(RequestBodyInvalidCode, requestBodyInvalidMsg, nil))
 		return
 	}
 
-	refreshPayload, err := server.tokenMaker.VerifyToken(req.RefreshToken)
+	refreshPayload, err := s.tokenMaker.VerifyToken(req.RefreshToken)
 	if err != nil {
 		returnGinError(ctx, http.StatusUnauthorized, transformApiResponse(VerifyRefreshTokenCode, "verify refresh token occurs error", nil))
 		return
 	}
 
-	session, err := server.store.GetSession(ctx, refreshPayload.ID)
+	session, err := s.store.GetSession(ctx, refreshPayload.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Err(err).Msg("renewAccessToken.GetSession cannot found session")
@@ -145,9 +145,9 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
+	accessToken, accessPayload, err := s.tokenMaker.CreateToken(
 		refreshPayload.UserID,
-		server.config.AccessTokenDuration,
+		s.config.AccessTokenDuration,
 	)
 	if err != nil {
 		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))

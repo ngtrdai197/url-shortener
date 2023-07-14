@@ -32,7 +32,7 @@ func loadConfig() *config.Config {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %w", err))
+		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
 	c, err := config.GetConfig(validator.New())
 	if err != nil {

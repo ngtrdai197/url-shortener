@@ -34,6 +34,7 @@ COPY --from=builder /app/backend .
 COPY start.sh .
 COPY wait-for.sh .
 COPY /db/migrations ./db/migrations
+COPY /keys ./keys
 
 RUN chmod +x /app/wait-for.sh
 RUN chmod +x /app/start.sh

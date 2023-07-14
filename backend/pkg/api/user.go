@@ -36,7 +36,7 @@ func newUserResponse(user db.User) userResponse {
 	}
 }
 
-func (server *Server) createUser(ctx *gin.Context) {
+func (s *Server) createUser(ctx *gin.Context) {
 	var req createUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -56,7 +56,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		HashedPassword: hashedPassword,
 		FullName:       req.FullName,
 	}
-	user, err := server.store.CreateUser(ctx, arg)
+	user, err := s.store.CreateUser(ctx, arg)
 	if err != nil {
 		if pgError, ok := err.(*pq.Error); ok {
 			log.Err(err).Msgf("PG Error: %v", pgError.Code.Name())
