@@ -68,21 +68,19 @@ const (
 )
 ```
 
-### Generate key for paseto token
+### Get public key for verify paseto token
 
 ```bash
-# Create a new folder for store pair keys
-mkdir keys && cd keys
+curl --location 'http://localhost:8088/pk'
 ```
 
-```bash
-# Create private key
-openssl genrsa -out private_key.pem 1024
-```
-
-```bash
-# Generate a public key from private
-openssl rsa -in private_key.pem -pubout > public_key.pub
+```json
+// Response
+{
+  "result_code": 1,
+  "message": "ok",
+  "data": "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
+}
 ```
 
 ### How can I authenticate?
