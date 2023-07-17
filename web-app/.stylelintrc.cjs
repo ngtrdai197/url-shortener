@@ -46,6 +46,8 @@ module.exports = {
     'value-keyword-case': null,
     'media-feature-range-notation': null,
     'import-notation': null,
+    'color-no-hex': true,
+    'color-named': "never",
   },
   overrides: [
     {
