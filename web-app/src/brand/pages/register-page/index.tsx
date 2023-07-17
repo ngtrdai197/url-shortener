@@ -2,12 +2,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
+
+import { ErrorMessage } from '../../../design/components/error-message';
 import { AuthForm } from '../../../design/templates/auth-form';
 import { RegisterRequestDto } from '../../models/auth.dto';
 import { useRegisterMutation } from '../../services/users.service';
 
 const schema = yup.object().shape({
-  username: yup.string().required('Username is required').min(6, 'Username must be at least 6 characters'),
+  username: yup.string().required('User name is required').min(6, 'Username must be at least 6 characters'),
   password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
   fullName: yup.string().required('Full name is required'),
   confirmPassword: yup
@@ -62,7 +64,7 @@ const Registration: React.FC = () => {
               type="text"
               className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
-            {error && <p>{error.message}</p>}
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </div>
         )}
       />
@@ -77,7 +79,7 @@ const Registration: React.FC = () => {
               type="text"
               className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
-            {error && <p>{error.message}</p>}
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </div>
         )}
       />
@@ -93,7 +95,7 @@ const Registration: React.FC = () => {
               autoComplete="new-password"
               className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
-            {error && <p>{error.message}</p>}
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </div>
         )}
       />
@@ -109,7 +111,7 @@ const Registration: React.FC = () => {
               autoComplete="new-password"
               className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
-            {error && <p>{error.message}</p>}
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </div>
         )}
       />
