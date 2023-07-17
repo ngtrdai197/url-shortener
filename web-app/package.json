@@ -42,7 +42,6 @@
     "@storybook/addon-links": "7.0.24",
     "@storybook/blocks": "7.0.24",
     "@storybook/builder-vite": "^7.0.24",
-    "@storybook/preset-create-react-app": "^7.0.24",
     "@storybook/react": "7.0.24",
     "@storybook/react-vite": "7.0.24",
     "@storybook/testing-library": "0.0.14-next.2",
