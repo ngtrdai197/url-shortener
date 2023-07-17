@@ -11,7 +11,7 @@
   background-position: center;
 
   &--opened {
-    z-index: 99999;
+    z-index: z('overlay');
     display: block;
   }
 }

@@ -1,6 +1,7 @@
 @use 'sass:map';
 
 $zIndex: (
+  'background': -1,
   'overlay': 99999,
 );
 
