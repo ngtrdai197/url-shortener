@@ -1,0 +1,17 @@
+.c-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  @mixin icon-shape($name) {
+    &--#{$name} {
+      background-image: url('/assets/icons/#{$name}.svg');
+    }
+  }
+
+  @include icon-shape('notification');
+}
