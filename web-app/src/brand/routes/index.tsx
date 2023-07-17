@@ -1,13 +1,13 @@
 import { RouteObject, useRoutes } from 'react-router-dom';
 import '../../design/styles/index.scss';
-import Layout from '../../design/templates/index';
+import AuthPage from '../../design/templates/auth-page';
 import Login from '../pages/login-page/index';
 import Registration from '../pages/register-page/index';
 
 const appRoutes: RouteObject[] = [
   {
     path: '/',
-    element: <Layout />,
+    element: <AuthPage />,
     children: [
       {
         path: '/login',
