@@ -3,7 +3,7 @@ to: src/design/components/<%= h.changeCase.param(name) %>/index.stories.tsx
 sh: prettier --write src/design/components/<%= h.changeCase.param(name) %>/index.stories.tsx
 ---
 import type { Meta, StoryObj } from '@storybook/react';
-import { <%= h.changeCase.pascal(name) %> } from './index';
+import { <%= h.changeCase.pascal(name) %> } from './';
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
 const meta = {
@@ -20,16 +20,16 @@ type Story = StoryObj<typeof <%= h.changeCase.pascal(name) %>>;
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Normal: Story = {
-  render: args => <Test {...args} />,
+  render: args => <<%= h.changeCase.pascal(name) %> {...args} />,
   args: {
     children: 'Example text',
   },
 };
 
-export const WithBlueModifier: Story = {
-  render: args => <Test {...args} />,
+export const WithRedModifier: Story = {
+  render: args => <<%= h.changeCase.pascal(name) %> {...args} />,
   args: {
-    children: <>Example component with blue color</>,
-    modifiers: 'blue',
+    children: <>Example component with red color</>,
+    modifiers: 'red',
   },
 };

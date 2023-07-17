@@ -7,7 +7,7 @@ import { mapModifiers } from "../../libs/components";
 
 export interface <%= h.changeCase.pascal(name) %>Props {
   children: React.ReactNode,
-  modifiers?: 'red' | 'blue' | 'green';
+  modifiers?: 'red';
 }
 
 export const <%= h.changeCase.pascal(name) %>: React.FC<<%= h.changeCase.pascal(name) %>Props> = (props) => (
