@@ -15,10 +15,24 @@ export default meta;
 type Story = StoryObj<typeof Icon>;
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
-export const Normal: Story = {
+export const Moon: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'moon',
+  },
+};
+export const Notification: Story = {
   render: args => <Icon {...args} />,
   args: {
     name: 'notification',
   },
 };
+
+export const Sun: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'sun',
+  },
+};
+
 
