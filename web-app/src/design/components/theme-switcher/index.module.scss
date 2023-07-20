@@ -1,0 +1,74 @@
+.c-theme-switcher {
+  $root: &;
+
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 75px;
+  height: 36px;
+  background-color: $color-light-blue;
+  border-radius: 24px;
+  transition: all 0.8s ease-out;
+  @include hoverPointer;
+
+  &__indicator {
+    position: absolute;
+    top: 50%;
+    right: 7px;
+    z-index: zindex('normal');
+    display: block;
+    width: 26px;
+    height: 26px;
+    content: '';
+    background-color: $color-white;
+    border-radius: 50%;
+    transition: all 0.5s ease-out;
+    transform: translateY(-50%);
+
+    #{$root}--dark & {
+      transform: translate(calc(-35px), -50%);
+    }
+  }
+
+  &--dark {
+    background-color: $color-dark-blue;
+
+    &::after {
+      right: auto;
+      left: 5px;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 2px;
+    font-size: 24px;
+    transition: opacity 0.7s ease-out;
+    transform: translateY(-50%);
+  }
+
+  &__icon--light-mode {
+    opacity: 1;
+
+    #{$root}--dark & {
+      opacity: 0;
+    }
+  }
+
+  &__icon--dark-mode {
+    right: 5px;
+    left: auto;
+    opacity: 0;
+
+    #{$root}--dark & {
+      opacity: 1;
+    }
+  }
+}
