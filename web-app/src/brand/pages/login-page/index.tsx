@@ -41,7 +41,9 @@ const Login: React.FC = () => {
         name="username"
         render={({ field, fieldState: { error } }) => (
           <div className="mb-2">
-            <label htmlFor={field.name} className="block text-sm font-semibold text-gray-800">User name</label>
+            <label htmlFor={field.name} className="block text-sm font-semibold text-gray-800">
+              User name
+            </label>
             <input
               {...field}
               id={field.name}
@@ -58,7 +60,9 @@ const Login: React.FC = () => {
         name="password"
         render={({ field, fieldState: { error } }) => (
           <div className="mb-2">
-            <label htmlFor={field.name} className="block text-sm font-semibold text-gray-800">Password</label>
+            <label htmlFor={field.name} className="block text-sm font-semibold text-gray-800">
+              Password
+            </label>
             <input
               {...field}
               id={field.name}

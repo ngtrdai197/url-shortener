@@ -9,7 +9,10 @@ export const ThemeSwitcher: React.FC = () => {
   const theme = currentThemeSetting ?? 'light';
 
   const handleChangeTheme = () => {
-    saveToLocalStorage('theme', isDarkMode ? 'dark' : 'light');
+    const newTheme = isDarkMode ? 'dark' : 'light';
+
+    saveToLocalStorage('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
     setIsDarkMode(!isDarkMode);
   };
 
