@@ -1,5 +1,6 @@
 import React, { FormEventHandler } from 'react';
 import { Link } from 'react-router-dom';
+import { ThemeSwitcher } from '../../components/theme-switcher';
 
 interface AuthFormProps {
   type: 'sign-in' | 'sign-up';
@@ -10,6 +11,9 @@ interface AuthFormProps {
 export const AuthForm: React.FC<AuthFormProps> = ({ type, children, onSubmit }) => (
   <div className="t-auth-form relative flex flex-col justify-center min-h-screen overflow-hidden">
     <div className="t-auth-form__container w-full p-6 m-auto bg-white rounded-md shadow-xl shadow-rose-600/40 ring-2 ring-purple-600">
+      <div className="flex justify-end">
+        <ThemeSwitcher />
+      </div>
       <h1 className="text-3xl font-semibold text-center text-purple-700">
         {type === 'sign-in' ? 'Welcome back' : 'Registration'}
       </h1>
