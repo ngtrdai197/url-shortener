@@ -2,9 +2,17 @@
 
 $zIndex: (
   'background': -1,
+  'normal': 1,
+  'indicator': 10,
   'overlay': 99999,
 );
 
-@function zIndex($font) {
-  @return string.unquote(map.get($zIndex, $font));
+@function zindex($keys...) {
+  $value: $zIndex;
+
+  @each $key in $keys {
+    $value: map-get($value, $key);
+  }
+
+  @return $value;
 }

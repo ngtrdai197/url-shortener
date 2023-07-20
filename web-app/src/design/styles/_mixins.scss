@@ -78,3 +78,27 @@
     content: '';
   }
 }
+
+@mixin hoverPointer {
+  &:active {
+    cursor: pointer;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  @include hover-opacity;
+}
+
+@mixin hover-opacity() {
+  transition: opacity 0.2s cubic-bezier(0.33, 0, 0.24, 1);
+
+  &:active {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    opacity: 0.5;
+  }
+}
