@@ -18,6 +18,7 @@ export const ThemeSwitcher: React.FC = () => {
     const newTheme = isDarkMode ? 'light' : 'dark';
 
     saveToLocalStorage('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
     setIsDarkMode(!isDarkMode);
   };
 
