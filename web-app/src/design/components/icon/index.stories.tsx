@@ -15,6 +15,12 @@ export default meta;
 type Story = StoryObj<typeof Icon>;
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
+export const Check: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'check',
+  },
+};
 export const Moon: Story = {
   render: args => <Icon {...args} />,
   args: {
@@ -34,5 +40,3 @@ export const Sun: Story = {
     name: 'sun',
   },
 };
-
-

@@ -13,6 +13,7 @@
     }
   }
 
+  @include icon-shape('check');
   @include icon-shape('moon');
   @include icon-shape('notification');
   @include icon-shape('sun');
