@@ -1,0 +1,79 @@
+.c-steps {
+  $root: &;
+
+  --step-position: 0;
+  --total-step: 1;
+
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 40px;
+
+  &::before {
+    position: absolute;
+    bottom: 14px;
+    left: 17.3%;
+    z-index: 1;
+    width: 66%;
+    height: 4px;
+    content: '';
+    background-color: $color-light-grayish-blue;
+  }
+
+  &::after {
+    position: absolute;
+    bottom: 14px;
+    left: 17.3%;
+    z-index: 2;
+    display: block;
+    width: calc((var(--step-position, 0) / var(--total-step, 1) * 100%));
+    height: 4px;
+    content: '';
+    background-color: $color-dark-grayish-blue;
+  }
+
+  &__step {
+    position: relative;
+    flex: 1;
+    width: 200px;
+    text-align: center;
+    counter-increment: mega-step;
+
+    &::before {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      content: '';
+      background-color: $color-dark-grayish-blue;
+      background-image: url('/assets/icons/check.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 16px 16px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+
+    &--current-step {
+      &::before {
+        color: $color-white;
+        content: counter(mega-step);
+        background-color: $color-light-red;
+        background-image: none;
+      }
+
+      & ~ #{$root}__step {
+        &::before {
+          content: counter(mega-step);
+          background-color: $color-light-grayish-blue;
+          background-image: none;
+        }
+      }
+    }
+  }
+}
