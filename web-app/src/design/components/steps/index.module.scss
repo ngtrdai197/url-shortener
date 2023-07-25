@@ -12,9 +12,9 @@
   &::before {
     position: absolute;
     bottom: 14px;
-    left: 17.3%;
+    left: calc(100% / (var(--total-step) * 2));
     z-index: 1;
-    width: 66%;
+    width: calc((var(--total-step, 1) - 1) / var(--total-step, 1) * 100%);
     height: 4px;
     content: '';
     background-color: $color-light-grayish-blue;
@@ -23,7 +23,7 @@
   &::after {
     position: absolute;
     bottom: 14px;
-    left: 17.3%;
+    left: calc(100% / (var(--total-step) * 2));
     z-index: 2;
     display: block;
     width: calc((var(--step-position, 0) / var(--total-step, 1) * 100%));
