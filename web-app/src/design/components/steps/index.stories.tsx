@@ -78,3 +78,11 @@ export const WithLongStepName: Story = {
     currentStep: 2,
   },
 };
+
+export const MoreSteps: Story = {
+  render: args => <Steps {...args} />,
+  args: {
+    stepNames: ['Step 1', 'Step 2', 'Step 3', 'Step 4', 'Step 5'],
+    currentStep: 2,
+  },
+};
