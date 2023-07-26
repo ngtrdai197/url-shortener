@@ -10,7 +10,7 @@ interface AuthFormProps {
 
 export const AuthForm: React.FC<AuthFormProps> = ({ type, children, onSubmit }) => (
   <div className="t-auth-form relative flex flex-col justify-center min-h-screen overflow-hidden">
-    <div className="t-auth-form__container w-full p-6 m-auto bg-white rounded-md shadow-xl shadow-rose-600/40 ring-2 ring-purple-600">
+    <div className="t-auth-form__container w-full p-6 m-auto bg-white dark:bg-slate-800 rounded-md shadow-xl shadow-rose-600/40 ring-2 ring-purple-600">
       <div className="flex justify-end">
         <ThemeSwitcher />
       </div>
@@ -30,9 +30,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type, children, onSubmit }) 
       </form>
       <p className="mt-8 text-xs font-light text-center text-gray-700">
         {' '}
-        <span className="font-medium">
+        <span className="font-medium dark:text-white">
           {type === 'sign-in' ? 'Do not have an account? ' : 'Already have an account? '}
-          <span className=" text-purple-600 hover:underline">
+          <span className=" text-purple-600 hover:underline dark:text-sky-500">
             <Link to={type === 'sign-in' ? '/register' : '/login'}>{type === 'sign-in' ? 'Register' : 'Login'} </Link>
           </span>
         </span>
