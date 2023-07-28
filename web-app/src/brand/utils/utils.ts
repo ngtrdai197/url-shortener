@@ -53,3 +53,12 @@ export const removeFromLocalStorage = (name: string) => {
 
   window.localStorage.removeItem(`${STORAGE_PREFIX}${name.toUpperCase()}`);
 };
+
+
+export interface DataAttributeObj {
+  [key: string]: string;
+}
+
+type DataAttrsFunc = (obj?: DataAttributeObj) => { [key: string]: string };
+
+export const toDataAttrs: DataAttrsFunc = object => object ? Object.fromEntries(Object.keys(object).map(key => [`data-${key}`, object[key]])) : {};
