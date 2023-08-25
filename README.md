@@ -10,7 +10,7 @@ Build a service for shortening url, idea will generate a unique ID (Twitter snow
 
 - Backend service: Golang (1.20) - [README](./backend/README.md)
 - Telegram Notify service: Golang (1.20) - [README](./telegram-notify/README.md)
-- Telegram Notify service: Python - [README](./expiration/README.md)
+- Expiration service: Python - [README](./expiration/README.md)
 - Auth service: Nodejs - [README](./auth/README.md)
 - Frontend: ReactJs (18.2.0) - [README](./web-app/README.md)
 
