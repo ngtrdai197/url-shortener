@@ -8,7 +8,10 @@
 
 Build a service for shortening url, idea will generate a unique ID (Twitter snowflake) and convert that unique id (base10) to base64
 
-- Backend: Golang (1.20) - [README](./backend/README.md)
+- Backend service: Golang (1.20) - [README](./backend/README.md)
+- Telegram Notify service: Golang (1.20) - [README](./telegram-notify/README.md)
+- Telegram Notify service: Python - [README](./expiration/README.md)
+- Auth service: Nodejs - [README](./auth/README.md)
 - Frontend: ReactJs (18.2.0) - [README](./web-app/README.md)
 
 
