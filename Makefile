@@ -7,8 +7,10 @@ build:
 up:
 	docker compose up -d
 
-start:
-	docker compose up --build
-
-serve:
+run:
 	docker compose up --build -d
+
+
+# CMD for microservices development
+ms-start:
+	docker compose -f microservices-compose.yaml up --build
