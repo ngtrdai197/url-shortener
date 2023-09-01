@@ -1,6 +1,7 @@
 import { AuthModule } from '@/auth/auth.module'
 import { HttpExceptionFilter } from '@/common/filters/http-exception.filter'
 import { AuthGuard } from '@/common/guards/auth.guard'
+import { GrpcModule } from '@/grpc/grpc.module'
 import { HealthModule } from '@/health/health.module'
 import { UserModule } from '@/user/user.module'
 import { ClassSerializerInterceptor, Module } from '@nestjs/common'
@@ -17,6 +18,7 @@ import { EnvironmentModule } from './environment/environment.module'
     JwtModule,
     UserModule,
     AuthModule,
+    GrpcModule,
   ],
   providers: [
     {

@@ -1,7 +1,7 @@
 import { AUTH_SERVICE_CONNECTION } from '@/database/constants'
 import { User } from '@/database/entities/user.entity'
 import { UserResponseDto } from '@/user/user.dto'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
@@ -16,7 +16,7 @@ export class UserService {
     const user = await this.userRepository.findOneBy({ id: userId })
 
     if (!user) {
-      throw new UnauthorizedException()
+      throw new BadRequestException()
     }
 
     const response = new UserResponseDto()

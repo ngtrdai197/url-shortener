@@ -22,4 +22,7 @@ export default () => ({
     access_token_duration: process.env.ACCESS_TOKEN_DURATION,
     refresh_token_duration: process.env.REFRESH_TOKEN_DURATION,
   },
+  grpc: {
+    url: process.env.GRPC_URL,
+  },
 })
