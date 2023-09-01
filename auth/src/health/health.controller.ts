@@ -1,5 +1,6 @@
 import { AUTH_SERVICE_CONNECTION } from '@/database/constants'
 import { Controller, Get } from '@nestjs/common'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import {
   HealthCheck,
   HealthCheckService,
@@ -9,6 +10,8 @@ import { InjectDataSource } from '@nestjs/typeorm'
 import { Connection } from 'typeorm'
 
 @Controller('health')
+@ApiTags('Health check')
+@ApiBearerAuth()
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,

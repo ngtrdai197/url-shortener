@@ -1,5 +1,5 @@
 import { AUTH_SERVICE_CONNECTION } from '@/database/constants'
-import { User } from '@/database/entities/user.entity'
+import { Session, User } from '@/database/entities'
 import { EnvironmentService } from '@/environment/environment.service'
 import { DynamicModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -17,7 +17,7 @@ export class DatabaseModule {
             return {
               name: AUTH_SERVICE_CONNECTION,
               type: 'postgres',
-              entities: [User],
+              entities: [User, Session],
               replication: {
                 master: envService.master,
                 slaves: envService.slaves,

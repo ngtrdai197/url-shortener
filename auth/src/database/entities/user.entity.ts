@@ -10,7 +10,7 @@ import {
 @Entity({ name: 'user' })
 export class User {
   @PrimaryGeneratedColumn()
-  id: string
+  id: number
 
   @Column({ name: 'username', unique: true })
   @IsString()

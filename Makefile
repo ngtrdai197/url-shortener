@@ -7,5 +7,8 @@ build:
 up:
 	docker compose up -d
 
-run:
+start:
+	docker compose up --build
+
+serve:
 	docker compose up --build -d
