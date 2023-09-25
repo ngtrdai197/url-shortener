@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { ErrorMessage } from '../error-message';
-import { FieldComponentProps } from '../../../brand/models/common/component';
 
 interface TextFieldProps extends Omit<React.InsHTMLAttributes<HTMLInputElement>, 'type' | 'className'> {
   label: string;
@@ -15,7 +14,3 @@ export const TextField: React.FC<TextFieldProps> = ({ errorMessage, ...restProps
     {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
   </div>
 );
-
-interface Component extends React.FC<TextFieldProps> {
-  RHF: FieldComponentProps<TextFieldProps>;
-}
