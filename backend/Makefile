@@ -28,3 +28,9 @@ migrateforce:
 
 sqlc:
 	sqlc generate
+
+proto:
+	rm -f pkg/grpc/pb/*.go
+	protoc --proto_path=pkg/grpc/proto --go_out=pkg/grpc/pb --go_opt=paths=source_relative \
+	--go-grpc_out=pkg/grpc/pb --go-grpc_opt=paths=source_relative \
+	pkg/grpc/proto/*.proto

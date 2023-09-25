@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package user;
+
+import "user.v1.proto";
+
+option go_package = "github.com/ngtrdai197/url-shortener/pkg/grpc/pb";
+
+service UserService {
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+};
+
+message GetUserRequest {
+  uint32 user_id = 1;
+}
+
+message GetUserResponse {
+  uint32 result_code = 1;
+  string message = 2;
+  User data = 3;
+}

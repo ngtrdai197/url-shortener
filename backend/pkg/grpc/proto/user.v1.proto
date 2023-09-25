@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package user;
 
+option go_package = "github.com/ngtrdai197/url-shortener/pkg/grpc/pb";
 import "google/protobuf/timestamp.proto";
 
 message User {

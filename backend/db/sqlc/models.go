@@ -5,18 +5,7 @@ package db
 import (
 	"database/sql"
 	"time"
-
-	"github.com/google/uuid"
 )
-
-type Session struct {
-	ID           uuid.UUID `json:"id"`
-	UserID       int64     `json:"user_id"`
-	RefreshToken string    `json:"refresh_token"`
-	IsBlocked    bool      `json:"is_blocked"`
-	ExpiresAt    time.Time `json:"expires_at"`
-	CreatedAt    time.Time `json:"created_at"`
-}
 
 type Url struct {
 	ID          int64          `json:"id"`
@@ -25,12 +14,4 @@ type Url struct {
 	CreatedAt   time.Time      `json:"created_at"`
 	UserID      int64          `json:"user_id"`
 	Description sql.NullString `json:"description"`
-}
-
-type User struct {
-	ID             int64     `json:"id"`
-	Username       string    `json:"username"`
-	HashedPassword string    `json:"hashed_password"`
-	FullName       string    `json:"full_name"`
-	CreatedAt      time.Time `json:"created_at"`
 }

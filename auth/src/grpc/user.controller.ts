@@ -24,6 +24,6 @@ export class UserGrpcController {
       await this.userService.getProfile(dto.userId),
       1,
       'Get profile success',
-    )
+    ).toPlain()
   }
 }

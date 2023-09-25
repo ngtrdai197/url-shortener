@@ -18,6 +18,23 @@ services:
     networks:
       - url_shortener
 
+  backend:
+    container_name: url_shortener_core_service
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./backend/.env:/app/.env
+      - ./backend/.air.toml:/app/.air.toml
+      - ./backend:/app
+    depends_on:
+      - postgres_db
+      - auth_service
+    networks:
+      - url_shortener
+
   postgres_db:
     container_name: url_shortener_postgres_db
     build:

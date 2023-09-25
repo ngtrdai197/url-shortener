@@ -7,23 +7,23 @@ export interface SideBarProps {
 }
 
 export const SideBar: React.FC<SideBarProps> = ({ children }) => {
-  const [isExpaned, setIsExpaned] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const sideBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (sideBarRef?.current) {
       const sideBarEl = sideBarRef.current;
 
-      sideBarEl.style.setProperty('--menu-items-width', isExpaned ? '200px' : '41px');
+      sideBarEl.style.setProperty('--menu-items-width', isExpanded ? '200px' : '41px');
     }
-  }, [isExpaned]);
+  }, [isExpanded]);
 
   return (
-    <div className={mapModifiers('c-side-bar', isExpaned && 'expended')} ref={sideBarRef}>
+    <div className={mapModifiers('c-side-bar', isExpanded && 'expanded')} ref={sideBarRef}>
       <button
         className="c-side-bar__button"
         onClick={() => {
-          setIsExpaned(!isExpaned);
+          setIsExpanded(!isExpanded);
         }}
       />
 

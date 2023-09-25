@@ -6,7 +6,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createUrl = `-- name: CreateUrl :one
@@ -68,7 +67,7 @@ func (q *Queries) GetCountURLsOfUser(ctx context.Context, userID int64) (int64, 
 }
 
 const getListURLs = `-- name: GetListURLs :many
-SELECT urls.id, urls.short_url, urls.long_url, urls.created_at, urls.user_id, urls.description, u.full_name user_full_name, u.username user_username, u.created_at user_created_at FROM urls LEFT JOIN users u ON u.id = urls.user_id
+SELECT id, short_url, long_url, created_at, user_id, description FROM urls
 ORDER BY id DESC
 LIMIT $1
 OFFSET $2
@@ -79,27 +78,15 @@ type GetListURLsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-type GetListURLsRow struct {
-	ID            int64          `json:"id"`
-	ShortUrl      string         `json:"short_url"`
-	LongUrl       string         `json:"long_url"`
-	CreatedAt     time.Time      `json:"created_at"`
-	UserID        int64          `json:"user_id"`
-	Description   sql.NullString `json:"description"`
-	UserFullName  string         `json:"user_full_name"`
-	UserUsername  string         `json:"user_username"`
-	UserCreatedAt time.Time      `json:"user_created_at"`
-}
-
-func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]GetListURLsRow, error) {
+func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]Url, error) {
 	rows, err := q.db.QueryContext(ctx, getListURLs, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetListURLsRow{}
+	items := []Url{}
 	for rows.Next() {
-		var i GetListURLsRow
+		var i Url
 		if err := rows.Scan(
 			&i.ID,
 			&i.ShortUrl,
@@ -107,9 +94,6 @@ func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]Get
 			&i.CreatedAt,
 			&i.UserID,
 			&i.Description,
-			&i.UserFullName,
-			&i.UserUsername,
-			&i.UserCreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -125,7 +109,7 @@ func (q *Queries) GetListURLs(ctx context.Context, arg GetListURLsParams) ([]Get
 }
 
 const getListURLsOfUser = `-- name: GetListURLsOfUser :many
-SELECT urls.id, urls.short_url, urls.long_url, urls.created_at, urls.user_id, urls.description, u.full_name user_full_name, u.username user_username, u.created_at user_created_at FROM urls LEFT JOIN users u ON u.id = urls.user_id
+SELECT id, short_url, long_url, created_at, user_id, description FROM urls
 WHERE user_id = $1
 ORDER BY id DESC
 LIMIT $2
@@ -138,27 +122,15 @@ type GetListURLsOfUserParams struct {
 	Offset int32 `json:"offset"`
 }
 
-type GetListURLsOfUserRow struct {
-	ID            int64          `json:"id"`
-	ShortUrl      string         `json:"short_url"`
-	LongUrl       string         `json:"long_url"`
-	CreatedAt     time.Time      `json:"created_at"`
-	UserID        int64          `json:"user_id"`
-	Description   sql.NullString `json:"description"`
-	UserFullName  string         `json:"user_full_name"`
-	UserUsername  string         `json:"user_username"`
-	UserCreatedAt time.Time      `json:"user_created_at"`
-}
-
-func (q *Queries) GetListURLsOfUser(ctx context.Context, arg GetListURLsOfUserParams) ([]GetListURLsOfUserRow, error) {
+func (q *Queries) GetListURLsOfUser(ctx context.Context, arg GetListURLsOfUserParams) ([]Url, error) {
 	rows, err := q.db.QueryContext(ctx, getListURLsOfUser, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetListURLsOfUserRow{}
+	items := []Url{}
 	for rows.Next() {
-		var i GetListURLsOfUserRow
+		var i Url
 		if err := rows.Scan(
 			&i.ID,
 			&i.ShortUrl,
@@ -166,9 +138,6 @@ func (q *Queries) GetListURLsOfUser(ctx context.Context, arg GetListURLsOfUserPa
 			&i.CreatedAt,
 			&i.UserID,
 			&i.Description,
-			&i.UserFullName,
-			&i.UserUsername,
-			&i.UserCreatedAt,
 		); err != nil {
 			return nil, err
 		}

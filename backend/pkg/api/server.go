@@ -8,30 +8,33 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/ngtrdai197/url-shortener/config"
 	db "github.com/ngtrdai197/url-shortener/db/sqlc"
-	"github.com/ngtrdai197/url-shortener/pkg/token"
+	"github.com/ngtrdai197/url-shortener/pkg/grpc/pb"
 	"github.com/rs/zerolog/log"
 )
 
 type Server struct {
-	config     *config.Config
-	store      db.Store
-	router     *gin.Engine
-	tokenMaker token.Maker
+	config      *config.Config
+	store       db.Store
+	router      *gin.Engine
+	userService pb.UserServiceClient
 }
 
-func NewServer(c *config.Config) *Server {
+// NewServer creates a new server instance with the given configuration and user service client.
+//
+// Parameters:
+// - c: a pointer to the config.Config struct representing the server configuration.
+// - client: the client for the UserService gRPC service.
+//
+// Returns:
+// - server: a pointer to the Server struct representing the created server instance.
+func NewServer(c *config.Config, client pb.UserServiceClient) *Server {
 	conn, err := sql.Open(c.DbDriver, c.DbSource)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot connect db")
 	}
 
-	tokenMaker, err := token.NewPasetoMaker(c)
-	if err != nil {
-		log.Fatal().Err(err).Msgf("cannot create token maker: %v", err)
-	}
-
 	store := db.NewStore(conn)
-	server := &Server{config: c, store: store, tokenMaker: tokenMaker}
+	server := &Server{config: c, store: store, userService: client}
 	server.setupRouter()
 
 	return server
@@ -51,33 +54,14 @@ func (s *Server) setupRouter() {
 		})
 	})
 
-	r.GET("/pk", func(c *gin.Context) {
-		c.JSON(http.StatusOK, transformApiResponse(SuccessCode, "ok", s.config.PublicKey))
-	})
-
 	r.GET("/r", s.RedirectUrl)
 
-	authRoutes := r.Group("/auth")
-	{
-		authRoutes.POST("/login", s.loginUser)
-		authRoutes.POST("/renew-token", s.renewAccessToken)
-		authRoutes.POST("/register", s.createUser)
-	}
-
 	authenticatedRoutes := r.Group("/")
-	authenticatedRoutes.Use(authMiddleware(s.tokenMaker))
+	authenticatedRoutes.Use(authMiddleware())
 	{
 		authenticatedRoutes.POST("/urls", s.CreateUrl)
 		authenticatedRoutes.GET("/urls", s.GetListURLsOfUser)
 		authenticatedRoutes.GET("/all-urls", s.GetListURLs)
-
-		authenticatedRoutes.GET("/profile", s.getProfile)
-	}
-
-	userRoutes := r.Group("/users")
-	userRoutes.Use(authMiddleware(s.tokenMaker))
-	{
-		userRoutes.GET("/profile", s.getProfile)
 	}
 
 	s.router = r
