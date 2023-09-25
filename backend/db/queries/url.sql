@@ -16,7 +16,7 @@ WHERE long_url = $1
 LIMIT 1;
 
 -- name: GetListURLsOfUser :many
-SELECT urls.*, u.full_name user_full_name, u.username user_username, u.created_at user_created_at FROM urls LEFT JOIN users u ON u.id = urls.user_id
+SELECT * FROM urls
 WHERE user_id = $1
 ORDER BY id DESC
 LIMIT $2
@@ -27,7 +27,7 @@ SELECT COUNT(1)
 FROM urls WHERE user_id = $1;
 
 -- name: GetListURLs :many
-SELECT urls.*, u.full_name user_full_name, u.username user_username, u.created_at user_created_at FROM urls LEFT JOIN users u ON u.id = urls.user_id
+SELECT * FROM urls
 ORDER BY id DESC
 LIMIT $1
 OFFSET $2;

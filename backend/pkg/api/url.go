@@ -10,9 +10,11 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/lib/pq"
 	db "github.com/ngtrdai197/url-shortener/db/sqlc"
-	"github.com/ngtrdai197/url-shortener/pkg/token"
+	"github.com/ngtrdai197/url-shortener/pkg/grpc/pb"
+	util "github.com/ngtrdai197/url-shortener/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -59,6 +61,13 @@ type baseUrlResponse struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+type userResponse struct {
+	UserID    int64     `json:"id"`
+	Username  string    `json:"username"`
+	FullName  string    `json:"full_name"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 func newBaseUrlResponse(url db.Url) baseUrlResponse {
 	return baseUrlResponse{
 		Id:          url.ID,
@@ -69,13 +78,7 @@ func newBaseUrlResponse(url db.Url) baseUrlResponse {
 		Description: url.Description.String,
 	}
 }
-func newURLUserResponse(url db.GetListURLsOfUserRow) urlsResponse {
-	user := userResponse{
-		UserID:    url.UserID,
-		Username:  url.UserUsername,
-		FullName:  url.UserFullName,
-		CreatedAt: url.UserCreatedAt,
-	}
+func newURLUserResponse(url db.Url, user userResponse) urlsResponse {
 	return urlsResponse{
 		Id:          url.ID,
 		User:        user,
@@ -85,13 +88,7 @@ func newURLUserResponse(url db.GetListURLsOfUserRow) urlsResponse {
 		Description: url.Description.String,
 	}
 }
-func newUrlResponse(url db.GetListURLsRow) urlsResponse {
-	user := userResponse{
-		UserID:    url.UserID,
-		Username:  url.UserUsername,
-		FullName:  url.UserFullName,
-		CreatedAt: url.UserCreatedAt,
-	}
+func newUrlResponse(url db.Url, user userResponse) urlsResponse {
 	return urlsResponse{
 		Id:          url.ID,
 		User:        user,
@@ -121,6 +118,18 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		return
 	}
 
+	user, err := s.userService.GetUser(ctx, &pb.GetUserRequest{
+		UserId: uint32(ctx.MustGet(authorizationPayloadKey).(int64)),
+	})
+
+	if err != nil {
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
+		log.Error().Msgf("Error.s.userService.GetUser=%v", err)
+		return
+	}
+
+	log.Info().Msgf("Info.s.userService.getUser=%v", user)
+
 	node, err := snowflake.NewNode(97)
 	if err != nil {
 		log.Error().Msgf("new node error=%v", err)
@@ -128,7 +137,6 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		return
 	}
 
-	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	id := node.Generate().Int64()
 
 	// Encode the ID as a base64 string to make it shorter.
@@ -137,7 +145,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		ID:          id,
 		ShortUrl:    shortUrl,
 		LongUrl:     req.LongUrl,
-		UserID:      authPayload.UserID,
+		UserID:      3,
 		Description: sql.NullString{String: req.Description, Valid: true},
 	}
 	createdUrl, err := s.store.CreateUrl(ctx, arg)
@@ -161,15 +169,16 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 		return
 	}
 
-	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	userId := ctx.MustGet(authorizationPayloadKey).(int64)
+
 	urls, err := s.store.GetListURLsOfUser(ctx, db.GetListURLsOfUserParams{
-		UserID: authPayload.UserID,
+		UserID: userId,
 		Limit:  int32(req.Limit),
 		Offset: int32((req.Page - 1) * req.Limit),
 	})
 	if err != nil && err != sql.ErrNoRows {
 		if err == sql.ErrNoRows {
-			urls = []db.GetListURLsOfUserRow{}
+			urls = []db.Url{}
 		} else {
 			log.Err(err).Msg("GetListURLsOfUser.err != sql.ErrNoRows")
 			returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
@@ -177,7 +186,7 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 		}
 	}
 
-	totalUrls, err := s.store.GetCountURLsOfUser(ctx, authPayload.UserID)
+	totalUrls, err := s.store.GetCountURLsOfUser(ctx, userId)
 	if err != nil {
 		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, "get count url of user occurs error", nil))
 		return
@@ -192,8 +201,28 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 	}
 
 	urlResponses := make([]urlsResponse, len(urls))
+	user, err := s.userService.GetUser(ctx, &pb.GetUserRequest{
+		UserId: uint32(userId),
+	})
+
+	if err != nil {
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
+		log.Error().Msgf("Error.s.userService.GetUser=%v", err)
+		return
+	}
+
+	log.Info().Msgf("Info.s.userService.us=%v", user.GetData().GetCreatedAt().GetSeconds())
+	parsedDate := util.ConvertTimestampToTime(&timestamp.Timestamp{
+		Seconds: user.Data.CreatedAt.Seconds,
+		Nanos:   user.Data.CreatedAt.Nanos,
+	})
 	for i, row := range urls {
-		urlResponses[i] = newURLUserResponse(row)
+		urlResponses[i] = newURLUserResponse(row, userResponse{
+			UserID:    int64(user.Data.Id),
+			Username:  user.Data.Username,
+			FullName:  user.Data.FullName,
+			CreatedAt: parsedDate,
+		})
 	}
 	response.Data = urlResponses
 	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "get list urls of user successfully", response))
@@ -216,7 +245,7 @@ func (s *Server) GetListURLs(ctx *gin.Context) {
 	})
 	if err != nil && err != sql.ErrNoRows {
 		if err == sql.ErrNoRows {
-			urls = []db.GetListURLsRow{}
+			urls = []db.Url{}
 		} else {
 			log.Err(err).Msg("GetListURLs.err != sql.ErrNoRows")
 			returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
@@ -239,9 +268,28 @@ func (s *Server) GetListURLs(ctx *gin.Context) {
 		},
 	}
 
+	userId := ctx.MustGet(authorizationPayloadKey).(int64)
+	user, err := s.userService.GetUser(ctx, &pb.GetUserRequest{
+		UserId: uint32(userId),
+	})
+	if err != nil {
+		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, somethingWentWrongMsg, nil))
+		log.Error().Msgf("Error.s.userService.GetUser=%v", err)
+		return
+	}
 	urlResponses := make([]urlsResponse, len(urls))
+	parsedDate := util.ConvertTimestampToTime(&timestamp.Timestamp{
+		Seconds: user.Data.CreatedAt.Seconds,
+		Nanos:   user.Data.CreatedAt.Nanos,
+	})
+
 	for i, row := range urls {
-		urlResponses[i] = newUrlResponse(row)
+		urlResponses[i] = newUrlResponse(row, userResponse{
+			UserID:    int64(user.Data.Id),
+			Username:  user.Data.Username,
+			FullName:  user.Data.FullName,
+			CreatedAt: parsedDate,
+		})
 	}
 	response.Data = urlResponses
 	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "get list urls successfully", response))

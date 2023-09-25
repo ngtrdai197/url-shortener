@@ -9,8 +9,11 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/ngtrdai197/url-shortener/config"
 	"github.com/ngtrdai197/url-shortener/pkg/api"
+	"github.com/ngtrdai197/url-shortener/pkg/grpc/pb"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -19,7 +22,12 @@ func main() {
 	// migration runs
 	migration(c)
 
-	s := api.NewServer(c)
+	conn, err := grpc.Dial("auth_service:5555", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+	client := pb.NewUserServiceClient(conn)
+	s := api.NewServer(c, client)
 
 	log.Info().Msgf("listening and serving HTTP on %s", c.PublicApiAddress)
 	if err := s.Start(c.PublicApiAddress); err != nil {

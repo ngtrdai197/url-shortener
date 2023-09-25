@@ -37,7 +37,7 @@
       transform: translate(-50%, calc(-50% + 4px));
     }
 
-    #{$root}--expended & {
+    #{$root}--expanded & {
       &::before {
         transform: translate(-50%, calc(-50%)) rotate(-135deg);
       }
@@ -119,7 +119,7 @@
     opacity: 0;
     transition: all 0.7s ease-out;
 
-    #{$root}--expended & {
+    #{$root}--expanded & {
       width: 100%;
       margin-left: 24px;
       opacity: 1;

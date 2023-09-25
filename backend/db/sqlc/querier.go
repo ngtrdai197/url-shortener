@@ -4,23 +4,16 @@ package db
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type Querier interface {
-	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, error)
-	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetCountURLs(ctx context.Context) (int64, error)
 	GetCountURLsOfUser(ctx context.Context, userID int64) (int64, error)
-	GetListURLs(ctx context.Context, arg GetListURLsParams) ([]GetListURLsRow, error)
-	GetListURLsOfUser(ctx context.Context, arg GetListURLsOfUserParams) ([]GetListURLsOfUserRow, error)
-	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
+	GetListURLs(ctx context.Context, arg GetListURLsParams) ([]Url, error)
+	GetListURLsOfUser(ctx context.Context, arg GetListURLsOfUserParams) ([]Url, error)
 	GetUrlByLong(ctx context.Context, longUrl string) (Url, error)
 	GetUrlByShort(ctx context.Context, shortUrl string) (Url, error)
-	GetUser(ctx context.Context, username string) (User, error)
-	GetUserById(ctx context.Context, id int64) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -1,6 +1,9 @@
 export default () => ({
   api_port: process.env.PUBLIC_API_PORT,
   env: process.env.APP_ENV,
+  logger: {
+    level: process.env.LOG_LEVEL,
+  },
   db: {
     is_logging: process.env.DB_LOGGING ? +process.env.DB_LOGGING : 0,
     master: {

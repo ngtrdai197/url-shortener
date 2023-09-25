@@ -55,21 +55,6 @@ const (
 )
 ```
 
-### Get public key for verify paseto token
-
-```bash
-curl --location 'http://localhost:8088/pk'
-```
-
-```json
-// Response
-{
-  "result_code": 1,
-  "message": "ok",
-  "data": "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
-}
-```
-
 ### How can I authenticate?
 
 ```bash

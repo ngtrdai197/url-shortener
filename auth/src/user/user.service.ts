@@ -24,7 +24,6 @@ export class UserService {
     response.username = user.username
     response.fullName = user.fullName
     response.createdAt = user.createdAt
-
     return response
   }
 }

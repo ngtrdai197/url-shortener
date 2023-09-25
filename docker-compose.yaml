@@ -2,6 +2,22 @@ version: "3.9"
 
 # Service for the backend
 services:
+  auth_service:
+    container_name: url_shortener_auth_service
+    build:
+      context: ./auth
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./auth:/app
+    env_file: ./auth/.env
+    restart: always
+    ports:
+      - 3333:3333
+      - 5555:5555
+    depends_on:
+      - postgres_db
+    networks:
+      - url_shortener
   backend:
     build:
       context: ./backend
@@ -12,6 +28,7 @@ services:
       - ./backend/.env:/app/.env
     depends_on:
       - postgres_db
+      - auth_service
     entrypoint: ["/app/wait-for.sh", "postgres_db:5432", "--", "/app/start.sh"]
     command: ["/app/backend"]
 
@@ -28,6 +45,7 @@ services:
     tty: true
     depends_on:
       - backend
+      - auth_service
 
   # Service for the db
   postgres_db:
