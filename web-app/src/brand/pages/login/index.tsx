@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -25,14 +25,18 @@ const Login: React.FC = () => {
     shouldFocusError: true,
   });
 
-  // const { VITE_BASE_ENDPOINT } = environment;
-
   const onSubmit = (data: LoginRequestDto) => {
     login(data)
       .unwrap()
       .then()
       .catch(() => {});
   };
+
+  useEffect(() => {
+    const delayFnc = () => setTimeout(() => {}, 5000);
+
+    delayFnc();
+  }, []);
 
   return (
     <AuthForm type="sign-in" onSubmit={handleSubmit(onSubmit)}>

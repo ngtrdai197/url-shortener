@@ -1,30 +1,22 @@
-import { RouteObject, useRoutes } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { LoadingSpinner } from '../../design/components/loading-spinner';
 import '../../design/styles/index.scss';
-import AuthPage from '../../design/templates/auth-page';
-import Login from '../pages/login-page/index';
-import Registration from '../pages/register-page/index';
+import { ThemeModeProvider } from '../contexts/theme-mode';
 
-const appRoutes: RouteObject[] = [
-  {
-    path: '/',
-    element: <AuthPage />,
-    children: [
-      {
-        path: '/login',
-        element: <Login />,
-      },
-      {
-        path: '/register',
-        element: <Registration />,
-      },
-    ],
-  },
-];
+const Login = lazy(async () => await import('../pages/login/index'));
+const Register = lazy(async () => await import('../pages/register/index'));
 
-const App: React.FC = () => {
-  const routes = useRoutes(appRoutes);
-
-  return <>{routes}</>;
-};
+const App: React.FC = () => (
+  <ThemeModeProvider>
+    <Suspense fallback={<LoadingSpinner open />}>
+      <Routes>
+        {/* <AuthRoute isAuthenticated={true} path="/homee" redirectTo="/home" element={<Register />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/registration" element={<Register />} />
+      </Routes>
+    </Suspense>
+  </ThemeModeProvider>
+);
 
 export default App;
