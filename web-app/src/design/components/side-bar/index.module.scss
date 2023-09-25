@@ -1,0 +1,128 @@
+.c-side-bar {
+  $root: &;
+
+  --menu-items-width: 56px;
+
+  position: fixed;
+  top: 10%;
+  left: 0;
+  z-index: 1000;
+  color: $color-white;
+
+  &__button {
+    position: relative;
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    color: $color-white;
+    background-color: $color-black;
+    border: 5px solid transparent;
+    border-radius: 50%;
+
+    &::before,
+    &::after {
+      position: absolute;
+      top: calc(50%);
+      left: calc(50%);
+      width: 16px;
+      height: 2px;
+      content: '';
+      background-color: $color-white;
+      transition: all 0.3s ease 0s;
+      transform: translate(-50%, calc(-50% - 4px));
+    }
+
+    &::after {
+      transform: translate(-50%, calc(-50% + 4px));
+    }
+
+    #{$root}--expended & {
+      &::before {
+        transform: translate(-50%, calc(-50%)) rotate(-135deg);
+      }
+
+      &::after {
+        transform: translate(-50%, calc(-50%)) rotate(135deg);
+      }
+    }
+  }
+
+  &__container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 56px;
+    min-height: 400px;
+    padding: 10px 15px;
+    margin-top: 20px;
+    background-color: $color-black;
+    border-radius: 0 32px 32px 0;
+  }
+
+  &__items {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: var(--menu-items-width, 56px);
+    padding: 20px 0;
+    margin-top: 60px;
+    background-color: $color-black;
+    border-radius: 0 32px 32px 0;
+    transition: all 0.5s ease-out;
+  }
+
+  &__item {
+    position: relative;
+    display: block;
+    padding: 15px 0;
+    @include hoverPointer;
+
+    &--activated {
+      color: $color-red;
+
+      &:hover,
+      &:focus {
+        cursor: default;
+        opacity: 1;
+      }
+
+      &::before {
+        position: absolute;
+        top: 0;
+        left: -15px;
+        width: 4px;
+        height: 100%;
+        content: '';
+        background-color: $color-white;
+      }
+    }
+  }
+
+  &__item-link {
+    display: block;
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    font-size: 26px;
+  }
+
+  &__item-name {
+    display: block;
+    margin-left: 12px;
+    overflow: hidden;
+    font-size: 18px;
+    opacity: 0;
+    transition: all 0.7s ease-out;
+
+    #{$root}--expended & {
+      width: 100%;
+      margin-left: 24px;
+      opacity: 1;
+    }
+  }
+}

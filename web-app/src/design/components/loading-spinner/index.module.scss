@@ -14,4 +14,8 @@
     z-index: z('overlay');
     display: block;
   }
+
+  [data-theme='dark'] & {
+    background-color: rgba($color: $color-black, $alpha: 80%);
+  }
 }

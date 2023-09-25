@@ -6,11 +6,20 @@
   "stylelint.validate": ["css", "scss"],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "files.eol": "\r\n",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/node_modules": true
+  },
   "editor.codeActionsOnSave": {
+    // "source.organizeImports": true,
     "source.fixAll.tslint": true,
     "source.fixAll.eslint": true,
     "source.fixAll.stylelint": true,
-    "source.organizeImports": true
   },
   "editor.guides.bracketPairs": true,
   "editor.bracketPairColorization.enabled": true,
@@ -24,9 +33,6 @@
   },
   "[go]": {
     "editor.defaultFormatter": "golang.go"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8"
