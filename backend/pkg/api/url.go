@@ -14,6 +14,7 @@ import (
 	"github.com/lib/pq"
 	db "github.com/ngtrdai197/url-shortener/db/sqlc"
 	"github.com/ngtrdai197/url-shortener/pkg/grpc/pb"
+	"github.com/ngtrdai197/url-shortener/pkg/kafka"
 	util "github.com/ngtrdai197/url-shortener/utils"
 	"github.com/rs/zerolog/log"
 )
@@ -145,7 +146,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		ID:          id,
 		ShortUrl:    shortUrl,
 		LongUrl:     req.LongUrl,
-		UserID:      3,
+		UserID:      int64(user.Data.GetId()),
 		Description: sql.NullString{String: req.Description, Valid: true},
 	}
 	createdUrl, err := s.store.CreateUrl(ctx, arg)
@@ -154,7 +155,16 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		returnGinError(ctx, http.StatusInternalServerError, transformApiResponse(SomethingWentWrongCode, "create new url failed", nil))
 		return
 	}
-
+	if err := s.kp.SendCreateUrlMessage(ctx, kafka.CreateUrlEvent{
+		ShortUrl:    createdUrl.ShortUrl,
+		LongUrl:     createdUrl.LongUrl,
+		UserID:      createdUrl.UserID,
+		Description: createdUrl.Description.String,
+		Id:          createdUrl.ID,
+		CreatedAt:   createdUrl.CreatedAt,
+	}); err != nil {
+		log.Error().Str("topic", s.config.KafkaTopicCreateUrl).AnErr("error", err)
+	}
 	ctx.JSON(http.StatusOK, transformApiResponse(SuccessCode, "create new url successfully", newBaseUrlResponse(createdUrl)))
 }
 
@@ -163,7 +173,6 @@ func (s *Server) GetListURLsOfUser(ctx *gin.Context) {
 		Limit: defaultLimit,
 		Page:  defaultPage,
 	}
-
 	if err := ctx.BindQuery(&req); err != nil {
 		returnGinError(ctx, http.StatusBadRequest, transformApiResponse(RequestBindQueryCode, requestQueryInvalidMsg, nil))
 		return

@@ -3,12 +3,14 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/ngtrdai197/url-shortener/config"
 	db "github.com/ngtrdai197/url-shortener/db/sqlc"
 	"github.com/ngtrdai197/url-shortener/pkg/grpc/pb"
+	"github.com/ngtrdai197/url-shortener/pkg/kafka"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,6 +19,7 @@ type Server struct {
 	store       db.Store
 	router      *gin.Engine
 	userService pb.UserServiceClient
+	kp          *kafka.Producer
 }
 
 // NewServer creates a new server instance with the given configuration and user service client.
@@ -34,7 +37,8 @@ func NewServer(c *config.Config, client pb.UserServiceClient) *Server {
 	}
 
 	store := db.NewStore(conn)
-	server := &Server{config: c, store: store, userService: client}
+	kp := kafka.NewProducer(strings.Split(c.KafkaBrokers, ","), c)
+	server := &Server{config: c, store: store, userService: client, kp: kp}
 	server.setupRouter()
 
 	return server
