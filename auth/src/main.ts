@@ -28,7 +28,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api')
   app.useGlobalPipes(new ValidationPipe({ transform: true }))
 
-  if (env.get('env') === 'development') {
+  if (env.get<string>('env') === 'development') {
     app.enableCors()
     setupSwagger(app)
   }
