@@ -14,7 +14,7 @@ export class EnvironmentService {
   public get<T>(key: string): T {
     const result = this.configService.get<T>(key)
     if (result === undefined || result === null) {
-      throw new Error(`Environment variable ${key} is not defined`)
+      throw new Error(`Environment variable "${key}" is not defined`)
     }
     return result
   }

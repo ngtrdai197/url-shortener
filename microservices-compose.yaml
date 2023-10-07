@@ -5,7 +5,7 @@ services:
     container_name: url_shortener_auth_service
     build:
       context: ./auth
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./auth:/app
     env_file: ./auth/.env
