@@ -9,6 +9,4 @@ RUN go mod download
 
 COPY ./ ./
 
-COPY /db/migrations ./db/migrations
-
 CMD ["air", "-c", ".air.toml"]
