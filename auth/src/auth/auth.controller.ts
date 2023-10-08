@@ -16,7 +16,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @Controller('auth')
 @ApiTags('Auth')
-@ApiBearerAuth()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -44,6 +43,7 @@ export class AuthController {
 
   @Post('logout')
   @ApiBaseResponse(Object)
+  @ApiBearerAuth()
   public async logout(@FromRequest('user') authPayload: IAuthPayload) {
     await this.authService.logout(authPayload.id)
     return new BaseResponseDto({}, 1, 'Logout success')
