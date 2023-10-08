@@ -1,6 +1,7 @@
+import { Public } from '@/common/decorators/is-public.decorator'
 import { AUTH_SERVICE_CONNECTION } from '@/database/constants'
 import { Controller, Get } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 import {
   HealthCheck,
   HealthCheckService,
@@ -11,7 +12,6 @@ import { Connection } from 'typeorm'
 
 @Controller('health')
 @ApiTags('Health check')
-@ApiBearerAuth()
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
@@ -23,6 +23,7 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
+  @Public()
   public async check() {
     return this.health.check([
       () =>

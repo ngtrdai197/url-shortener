@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   auth_service:
-    container_name: url_shortener_auth_service
+    container_name: auth_service
     build:
       context: ./auth
       dockerfile: Dockerfile.dev
@@ -19,7 +19,7 @@ services:
       - url_shortener
 
   backend:
-    container_name: url_shortener_core_service
+    container_name: core_service
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
@@ -106,7 +106,7 @@ services:
       - url_shortener
 
   postgres_db:
-    container_name: url_shortener_postgres_db
+    container_name: postgres_db
     build:
       context: ./postgres
       dockerfile: Dockerfile
