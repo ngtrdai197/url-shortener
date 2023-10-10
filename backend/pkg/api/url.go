@@ -146,7 +146,7 @@ func (s *Server) CreateUrl(ctx *gin.Context) {
 		ID:          id,
 		ShortUrl:    shortUrl,
 		LongUrl:     req.LongUrl,
-		UserID:      int64(user.Data.GetId()),
+		UserID:      ctx.MustGet(authorizationPayloadKey).(int64),
 		Description: sql.NullString{String: req.Description, Valid: true},
 	}
 	createdUrl, err := s.store.CreateUrl(ctx, arg)
