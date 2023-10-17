@@ -21,6 +21,31 @@ export const Check: Story = {
     name: 'check',
   },
 };
+export const EyeBlack: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'eye-black',
+  },
+};
+export const EyeSplashBlack: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'eye-splash-black',
+  },
+};
+export const EyeWhite: Story = {
+  decorators: [
+    Story => (
+      <div style={{ background: '#000' }}>
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    name: 'eye-white',
+  },
+  render: args => <Icon {...args} />,
+};
 export const Moon: Story = {
   render: args => <Icon {...args} />,
   args: {

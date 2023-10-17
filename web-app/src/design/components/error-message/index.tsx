@@ -5,5 +5,5 @@ export interface ErrorMessageProps {
 }
 
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ children }) => (
-  <p className="c-error-message text-sm text-red-500 mt-1">{children}</p>
+  <p className="text-sm text-red-500 mt-1">{children}</p>
 );

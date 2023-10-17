@@ -1,12 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { ErrorMessage } from '../../../design/components/error-message';
 import { AuthForm } from '../../../design/templates/auth-form';
 import { RegisterRequestDto } from '../../models/auth.dto';
 import { useRegisterMutation } from '../../services/users.service';
+import { TextFieldRHF } from '../../../design/components/text-field';
 
 const schema = yup.object().shape({
   username: yup.string().required('User name is required').min(6, 'Username must be at least 6 characters'),
@@ -53,68 +53,10 @@ const Registration: React.FC = () => {
 
   return (
     <AuthForm type="sign-up" onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        control={control}
-        name="username"
-        render={({ field, fieldState: { error } }) => (
-          <div className="mb-2">
-            <label className="block text-sm font-semibold text-gray-800">User name</label>
-            <input
-              {...field}
-              type="text"
-              className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
-            />
-            {error && <ErrorMessage>{error.message}</ErrorMessage>}
-          </div>
-        )}
-      />
-      <Controller
-        control={control}
-        name="fullName"
-        render={({ field, fieldState: { error } }) => (
-          <div className="mb-2">
-            <label className="block text-sm font-semibold text-gray-800">Full name</label>
-            <input
-              {...field}
-              type="text"
-              className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
-            />
-            {error && <ErrorMessage>{error.message}</ErrorMessage>}
-          </div>
-        )}
-      />
-      <Controller
-        control={control}
-        name="password"
-        render={({ field, fieldState: { error } }) => (
-          <div className="mb-2">
-            <label className="block text-sm font-semibold text-gray-800">Password</label>
-            <input
-              {...field}
-              type="password"
-              autoComplete="new-password"
-              className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
-            />
-            {error && <ErrorMessage>{error.message}</ErrorMessage>}
-          </div>
-        )}
-      />
-      <Controller
-        control={control}
-        name="confirmPassword"
-        render={({ field, fieldState: { error } }) => (
-          <div className="mb-2">
-            <label className="block text-sm font-semibold text-gray-800">Confirm password</label>
-            <input
-              {...field}
-              type="password"
-              autoComplete="new-password"
-              className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
-            />
-            {error && <ErrorMessage>{error.message}</ErrorMessage>}
-          </div>
-        )}
-      />
+      <TextFieldRHF control={control} name="username" label="User name" />
+      <TextFieldRHF control={control} name="fullName" label="Full name" />
+      <TextFieldRHF control={control} name="password" label="Password" />
+      <TextFieldRHF control={control} name="confirmPassword" label="Confirm password" />
     </AuthForm>
   );
 };

@@ -1,21 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { TextField } from './';
+import { PasswordField } from './';
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
 const meta = {
-  title: 'Components/TextField',
-  component: TextField,
+  title: 'Components/PasswordField',
+  component: PasswordField,
   tags: ['autodocs'],
-} satisfies Meta<typeof TextField>;
+} satisfies Meta<typeof PasswordField>;
 
 export default meta;
-type Story = StoryObj<typeof TextField>;
+type Story = StoryObj<typeof PasswordField>;
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Normal: Story = {
-  render: args => <TextField {...args} />,
-};
-
-export const WithErrorMessage: Story = {
-  render: args => <TextField {...args} errorMessage="This field is required" />,
+  render: args => <PasswordField {...args} />,
 };

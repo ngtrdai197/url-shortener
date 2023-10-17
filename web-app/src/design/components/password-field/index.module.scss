@@ -1,0 +1,26 @@
+.c-password-field {
+  &__input-container {
+    position: relative;
+  }
+
+  &__input {
+    padding-right: 42px;
+
+    &::-ms-reveal,
+    ::-ms-clear {
+      display: none;
+    }
+  }
+
+  &__hidden-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    display: block;
+    padding: 5px;
+    font-size: 20px;
+    cursor: pointer;
+    transform: translateY(-50%);
+    @include hover-opacity;
+  }
+}

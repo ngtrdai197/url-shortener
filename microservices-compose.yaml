@@ -105,6 +105,20 @@ services:
     networks:
       - url_shortener
 
+  web-app:
+    build:
+      context: ./web-app
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - "/app/node_modules"
+      - ./web-app:/app
+    tty: true
+    depends_on:
+      - backend
+      - auth_service
+
   postgres_db:
     container_name: postgres_db
     build:
@@ -117,6 +131,7 @@ services:
       - ./postgres/data:/var/lib/postgresql/data
     networks:
       - url_shortener
+
 
 networks:
   url_shortener:

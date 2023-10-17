@@ -10,7 +10,7 @@ export const usersAPI = createApi({
   baseQuery: axiosBaseQuery(),
   endpoints: builder => ({
     register: builder.mutation<IHttpResponse<null>, RegisterRequestDto>({
-      query: req => ({ url: '/users', method: HTTP_METHOD.POST, data: instanceToPlain(req) }),
+      query: req => ({ url: '/register', method: HTTP_METHOD.POST, data: instanceToPlain(req), isAuth: true }),
     }),
   }),
 });

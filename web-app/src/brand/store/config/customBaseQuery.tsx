@@ -11,14 +11,18 @@ export const axiosBaseQuery =
       data?: AxiosRequestConfig['data'];
       params?: AxiosRequestConfig['params'];
       isExternalAPI?: boolean;
+      isAuth?: boolean;
     },
     unknown,
     unknown
   > =>
-  async ({ url, method, data, params, isExternalAPI }) => {
+  async ({ url, method, data, params, isExternalAPI, isAuth }) => {
     try {
       const result = await axios({
-        url: isExternalAPI ? url : environment.VITE_BASE_ENDPOINT + url,
+        url: isExternalAPI
+          ? url
+          : `${environment.VITE_BASE_ENDPOINT}:${isAuth ? `${environment.AUTH_PORT}/api/auth` : environment.API_PORT}` +
+            url,
         method,
         data,
         params,

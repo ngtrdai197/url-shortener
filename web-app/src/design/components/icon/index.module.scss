@@ -14,6 +14,9 @@
   }
 
   @include icon-shape('check');
+  @include icon-shape('eye-black');
+  @include icon-shape('eye-splash-black');
+  @include icon-shape('eye-white');
   @include icon-shape('moon');
   @include icon-shape('notification');
   @include icon-shape('sun');

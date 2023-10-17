@@ -1,10 +1,11 @@
 import React from 'react';
 
 import type { Preview } from '@storybook/react';
-
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+
 import { store } from '../src/brand/store';
+import { ActionToast } from '../src/design/components/action-toast';
 
 import '../src/design/styles/index.scss';
 
@@ -22,10 +23,13 @@ export const preview: Preview = {
 
 export const decorators = [
   Story => (
-    <BrowserRouter>
-      <Provider store={store}>
-        <Story />
-      </Provider>
-    </BrowserRouter>
+    <React.StrictMode>
+      <ActionToast />
+      <BrowserRouter>
+        <Provider store={store}>
+          <Story />
+        </Provider>
+      </BrowserRouter>
+    </React.StrictMode>
   ),
 ];

@@ -5,7 +5,7 @@
   bottom: 0;
   left: 0;
   display: none;
-  background-color: rgba($color: $color-white, $alpha: 80%);
+  background-color: transparent;
   background-image: url('/assets/images/spinner.gif');
   background-repeat: no-repeat;
   background-position: center;
@@ -13,9 +13,5 @@
   &--opened {
     z-index: z('overlay');
     display: block;
-  }
-
-  [data-theme='dark'] & {
-    background-color: rgba($color: $color-black, $alpha: 80%);
   }
 }

@@ -1,8 +1,10 @@
-import { createContext, useContext, useLayoutEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { loadFromLocalStorage, saveToLocalStorage } from '../utils/utils';
 
+export type ThemeMode = 'light' | 'dark';
+
 interface ThemeModeContextProps {
-  mode: 'light' | 'dark';
+  mode: ThemeMode;
   changeThemeMode: () => void;
 }
 
@@ -13,10 +15,10 @@ interface ThemeModeProviderProps {
 }
 
 export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }) => {
-  const mode = loadFromLocalStorage('theme') as 'light' | 'dark';
+  const mode = (loadFromLocalStorage('theme') as 'light' | 'dark') ?? 'light';
   const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', mode);
     document.documentElement.classList.add(mode);
     setIsDarkMode(mode === 'dark');

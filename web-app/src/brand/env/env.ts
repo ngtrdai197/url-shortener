@@ -5,7 +5,13 @@ export class Environment {
   VITE_APP_TITLE = 'URL Shortener';
 
   @Expose()
-  VITE_BASE_ENDPOINT = 'http://localhost:8088';
+  AUTH_PORT = '3333';
+
+  @Expose()
+  API_PORT = '8080';
+
+  @Expose()
+  VITE_BASE_ENDPOINT = 'http://localhost';
 
   public toInstance() {
     return plainToInstance(Environment, import.meta.env, {

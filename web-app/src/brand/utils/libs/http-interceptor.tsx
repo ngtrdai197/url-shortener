@@ -8,7 +8,7 @@ import { loadFromCookies, loadFromLocalStorage, removeFromLocalStorage, saveToLo
 
 axios.defaults.timeout = 120000; // 120s
 
-axios.defaults.baseURL = environment.VITE_BASE_ENDPOINT;
+axios.defaults.baseURL = `${environment.VITE_BASE_ENDPOINT}:${environment.API_PORT}`;
 
 // Handle token refresh & queue pending requests
 type failedQueueTypes = {
@@ -18,8 +18,6 @@ type failedQueueTypes = {
 
 export type AxiosConfigWithInterceptedSetting = AxiosRequestConfig & {
   _retry?: boolean;
-  _isSkipCommonError?: boolean;
-  _isSkipAdditionalAuthError?: boolean;
   url?: string;
 };
 
@@ -40,7 +38,7 @@ const processQueue = (error: Error | null) => {
   failedQueue = [];
 };
 
-export const HttpInterceptor: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const HttpInterceptor: React.FC = () => {
   // const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -56,9 +54,7 @@ export const HttpInterceptor: React.FC<{ children: React.ReactNode }> = ({ child
 
       return config;
     },
-    async error => {
-      return await Promise.reject(error);
-    }
+    async error => await Promise.reject(error)
   );
 
   axios.interceptors.response.use(
@@ -110,7 +106,9 @@ export const HttpInterceptor: React.FC<{ children: React.ReactNode }> = ({ child
 
           // Note: Handle refresh token
           axios
-            .post(`${environment.VITE_BASE_ENDPOINT}auth/renew-token`, { refresh_token: refreshToken })
+            .post(`${environment.VITE_BASE_ENDPOINT}:${environment.AUTH_PORT}/api/auth/renew-token`, {
+              refresh_token: refreshToken,
+            })
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .then(({ data }: any) => {
               if (data.status === 200) {
@@ -139,5 +137,5 @@ export const HttpInterceptor: React.FC<{ children: React.ReactNode }> = ({ child
     }
   );
 
-  return <>{children}</>;
+  return null;
 };

@@ -29,11 +29,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type, children, onSubmit }) 
         </div>
       </form>
       <p className="mt-8 text-xs font-light text-center text-gray-700">
-        {' '}
         <span className="font-medium dark:text-white">
           {type === 'sign-in' ? 'Do not have an account? ' : 'Already have an account? '}
           <span className=" text-purple-600 hover:underline dark:text-sky-500">
-            <Link to={type === 'sign-in' ? '/register' : '/login'}>{type === 'sign-in' ? 'Register' : 'Login'} </Link>
+            <Link to={type === 'sign-in' ? '/registration' : '/login'}>
+              {type === 'sign-in' ? 'Register' : 'Login'}{' '}
+            </Link>
           </span>
         </span>
       </p>
