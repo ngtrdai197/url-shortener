@@ -1,0 +1,35 @@
+{{ range $deployment_id, $deployment := .Values.deployments }}
+{{- if $deployment.enabled }}
+{{- if $deployment.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $.Release.Name }}-{{ $deployment_id }}
+  labels:
+    app: {{ $.Release.Name }}-{{ $deployment_id }}
+    tier: {{ $.Release.Name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $.Release.Name }}-{{ $deployment_id }}
+  minReplicas: {{ $deployment.autoscaling.minReplicas }}
+  maxReplicas: {{ $deployment.autoscaling.maxReplicas }}
+  metrics:
+    {{- if $deployment.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ $deployment.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if $deployment.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ $deployment.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+
+---
+{{- end }}
+{{- end }}
+{{- end }}

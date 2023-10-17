@@ -1,0 +1,26 @@
+{{ range $deployment_id, $deployment := .Values.deployments }}
+{{- if $deployment.enabled }}
+{{- if $deployment.service.enabled }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $deployment_id }}
+  labels:
+      app: {{ $.Release.Name }}-{{ $deployment_id }}
+      tier: {{ $.Release.Name }}
+spec:
+  ports:
+    - port: {{ $deployment.service.servicePort }}
+      targetPort: {{ $deployment.service.containerPort }}
+      protocol: TCP
+      name: {{ $deployment.service.portName }}
+  selector:
+    app: {{ $.Release.Name }}-{{ $deployment_id }}
+    tier: {{ $.Release.Name }}
+  sessionAffinity: None
+
+---
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,26 @@
+{{ range $deployment_id, $deployment := .Values.deployments }}
+{{- if $deployment.enabled }}
+{{- if $deployment.service.headless }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $deployment_id }}-headless
+  labels:
+      app: {{ $.Release.Name }}-{{ $deployment_id }}
+      tier: {{ $.Release.Name }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ $deployment.service.servicePort }}
+      targetPort: {{ $deployment.service.containerPort }}
+      protocol: TCP
+      name: {{ $deployment.service.portName }}
+  selector:
+    app: {{ $.Release.Name }}-{{ $deployment_id }}
+    tier: {{ $.Release.Name }}
+    
+---
+{{- end }}
+{{- end }}
+{{- end }}

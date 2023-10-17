@@ -1,0 +1,124 @@
+image:
+  repository: ngtrdai197/url-shortener-auth-service
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets:
+  name: regcred
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  {}
+
+podSecurityContext:
+  {}
+
+securityContext:
+  {}
+
+nodeSelector:
+  {}
+
+tolerations:
+  []
+affinity: {}
+
+maxSurge: 2
+maxUnavailable: 0
+
+ingress:
+  enabled: false
+  className: ""
+  annotations:
+    {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+deployments:
+  ##  POD Auth
+  public-api:
+    enabled: true
+    replicaCount: 2
+    command: [ "node", "dist/src/main.js" ]
+    # volumes
+    volumemounts: {}
+    # service
+    service:
+      enabled: true
+      serviceType: ClusterIP
+      portName: http
+      containerPort: 3333
+      servicePort: 80
+    # hpa
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+    # resource
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1500Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+    # heath
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 3333
+      initialDelaySeconds: 10
+      failureThreshold: 3
+      timeoutSeconds: 10
+      periodSeconds: 90
+
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 3333
+      initialDelaySeconds: 10
+      failureThreshold: 3
+      timeoutSeconds: 10
+      periodSeconds: 90
+    # env private
+    env: {}
+    mountPath: /app/.env
+    useEnv: disabled
+
+commonEnv:
+  mountpath: /app/.env
+  data: |-
+    APP_ENV=develop
+    PUBLIC_API_PORT=3333
+
+    # DB
+    POSTGRES_HOST=postgres_db
+    POSTGRES_PORT=5432
+    POSTGRES_USER=postgres
+    POSTGRES_PASSWORD=postgres
+    POSTGRES_DB=url_shortener
+
+    #LOG
+    LOG_LEVEL=debug
+    DB_LOGGING=1
+
+    # AUTH
+    ACCESS_TOKEN_DURATION=900 #15m
+    REFRESH_TOKEN_DURATION=21600 #6h
+
+    # GRPC
+    GRPC_URL=0.0.0.0:5555

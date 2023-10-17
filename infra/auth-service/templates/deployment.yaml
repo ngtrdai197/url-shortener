@@ -1,0 +1,121 @@
+{{ range $deployment_id, $deployment := .Values.deployments }}
+{{- if $deployment.enabled }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    {{- with $.Values.commonEnv }}
+    reloader.stakater.com/auto: "true"
+    configmap.reloader.stakater.com/reload: {{ $.Release.Name }}-configmap
+    {{- end }}
+
+    {{ range $key_id, $key := $.Values.configmakey }}
+    reloader.stakater.com/auto: "true"
+    configmap.reloader.stakater.com/reload: "{{ $.Release.Name }}-{{ $deployment_id }}"
+    {{- end }}
+    {{- with $.Values.podAnnotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+  name:  {{ $.Release.Name }}-{{ $deployment_id }}
+  labels:
+    app: {{ $.Release.Name }}-{{ $deployment_id }}
+    tier: {{ $.Release.Name }}
+spec:
+  replicas: {{ $deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}-{{ $deployment_id }}
+      tier: {{ $.Release.Name }}
+
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ $.Release.Name }}-{{ $deployment_id }}
+        tier: {{ $.Release.Name }}
+    spec:
+      imagePullSecrets:
+        - name: {{ $.Values.imagePullSecrets.name }}
+
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ $.Release.Name }}-{{ $deployment_id }}
+        image: {{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ $deployment.service.containerPort }}
+          name: {{ $deployment.service.portName }}
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+
+        {{- with $deployment.command }}
+        command:
+          {{- toYaml $deployment.command  | nindent 12 }}
+        {{- end }}
+
+        resources:
+          {{- toYaml $deployment.resources | nindent 12 }}
+
+        {{- with $deployment.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+
+        {{- with $deployment.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+
+        volumeMounts:
+        {{- if eq $deployment.useEnv "enabled" }}
+          - name: "{{ $.Release.Name }}-{{ $deployment_id }}"
+            mountPath: {{ $deployment.mountPath }}
+            subPath: env
+        {{ else }}
+          - name: {{ $.Release.Name }}-configmap
+            mountPath: {{ $.Values.commonEnv.mountpath }}
+            subPath: env
+        {{- end }}
+
+
+      volumes:
+      {{- if eq $deployment.useEnv "enabled" }}
+        - name: "{{ $.Release.Name }}-{{ $deployment_id }}"
+          configMap:
+            name: "{{ $.Release.Name }}-{{ $deployment_id }}"
+      {{ else }}
+        - name: {{ $.Release.Name }}-configmap
+          configMap:
+            name: {{ $.Release.Name }}-configmap
+      {{- end }}
+
+      restartPolicy: Always
+
+      {{- with $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+---
+{{- end }}
+{{- end }}

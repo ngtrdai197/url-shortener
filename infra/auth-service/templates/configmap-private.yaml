@@ -1,0 +1,14 @@
+{{ range $deployment_id, $deployment := .Values.deployments }}
+{{- if $deployment.enabled }}
+{{- with $deployment.env }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ $.Release.Name }}-{{ $deployment_id }}"
+
+data:
+  env: {{ toYaml $deployment.env | nindent 8 }}
+---
+{{- end }}
+{{- end }}
+{{- end }}

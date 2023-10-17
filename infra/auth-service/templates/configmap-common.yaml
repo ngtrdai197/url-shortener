@@ -1,0 +1,10 @@
+{{- with .Values.commonEnv }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-configmap
+
+data:
+  env: {{ toYaml $.Values.commonEnv.data | nindent 4 }}
+---
+{{- end }}
