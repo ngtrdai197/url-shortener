@@ -79,7 +79,7 @@ deployments:
     # heath
     livenessProbe:
       httpGet:
-        path: /health
+        path: /api/health
         port: 3333
       initialDelaySeconds: 10
       failureThreshold: 3
@@ -88,7 +88,7 @@ deployments:
 
     readinessProbe:
       httpGet:
-        path: /health
+        path: /api/health
         port: 3333
       initialDelaySeconds: 10
       failureThreshold: 3
