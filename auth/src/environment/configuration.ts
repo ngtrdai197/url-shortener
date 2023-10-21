@@ -1,4 +1,5 @@
 export default () => ({
+  flag_checker: process.env.FLAG_FROM_K8S,
   api_port: process.env.PUBLIC_API_PORT,
   env: process.env.APP_ENV,
   logger: {
@@ -8,7 +9,7 @@ export default () => ({
     is_logging: process.env.DB_LOGGING ? +process.env.DB_LOGGING : 0,
     master: {
       host: process.env.POSTGRES_HOST,
-      port: process.env.POSTGRES_PORT,
+      port: process.env.POSTGRES_PORT ? +process.env.POSTGRES_PORT : 5432,
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,

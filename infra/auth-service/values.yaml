@@ -1,6 +1,6 @@
 image:
-  repository: ngtrdai197/url-shortener-auth-service
-  pullPolicy: Always
+  repository: auth-service
+  pullPolicy: Never # This image will use at local registry, so we don't need to pull it. Replace with "Always" if you want to pull it from remote
   tag: "latest"
 
 imagePullSecrets:
@@ -64,7 +64,7 @@ deployments:
     autoscaling:
       enabled: false
       minReplicas: 1
-      maxReplicas: 100
+      maxReplicas: 5
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
     # resource
@@ -105,11 +105,14 @@ commonEnv:
     APP_ENV=develop
     PUBLIC_API_PORT=3333
 
+    # FLAG ENV
+    FLAG_FROM_K8S="this is a flag from k8s"
+
     # DB
-    POSTGRES_HOST=postgres_db
+    POSTGRES_HOST=postgresql-db.default.svc.cluster.local
     POSTGRES_PORT=5432
     POSTGRES_USER=postgres
-    POSTGRES_PASSWORD=postgres
+    POSTGRES_PASSWORD=9jweGiHSGu
     POSTGRES_DB=url_shortener
 
     #LOG

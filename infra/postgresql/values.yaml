@@ -28,7 +28,7 @@ global:
       postgresPassword: ""
       username: ""
       password: ""
-      database: ""
+      database: "url_shortener"
       existingSecret: ""
       secretKeys:
         adminPasswordKey: ""
@@ -518,7 +518,7 @@ primary:
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector:
-    eks.amazonaws.com/nodegroup: database
+    kubernetes.io/os: linux # for pod anti-affinity, use nodeSelector locally
   ## @param primary.tolerations Tolerations for PostgreSQL primary pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##

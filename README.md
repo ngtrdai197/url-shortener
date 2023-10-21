@@ -15,6 +15,47 @@ Build a service for shortening url, idea will generate a unique ID (Twitter snow
 - Frontend: ReactJs (18.2.0) - [README](./web-app/README.md)
 
 
+## Setup
+- Build images
+```bash
+# Build auth service
+$ cd ./auth && docker build -t auth-service -f Dockerfile .
+
+# Build core service
+$ cd ./backend && docker build -t core-service -f Dockerfile .
+```
+- Install helm chart
+```bash
+# Auth service
+$ cd ./infra/auth-service && helm install auth-service . -f values.yaml
+```
+```bash
+# Postgresql DB
+$ cd ./postgresql && helm install postgresql-db . -f values.yaml
+```
+```bash
+# To get the password for "postgres" run:
+$ export POSTGRES_PASSWORD=$(kubectl get secret --namespace default postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+
+# Display password
+$ env | grep POSTGRES_PASSWORD
+
+# To connect to your database from outside the cluster execute the following commands:
+$ kubectl port-forward --namespace default svc/postgresql-db 5432:5432 &
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d url_shortener -p 5432
+```
+
+- Exec pod
+```bash
+# Example exec pod of auth service
+$ kubectl exec -it {pod name} -- sh
+```
+
+- For test, but without setup Kong Gate. We need forwarding port to check, example for auth service
+```bash
+$ make forwardport
+```
+
 ## The project is still in progress (WIP :rocket:)
 
 ## Contributors ✨

@@ -17,3 +17,9 @@ ms-down:
 	docker compose -f microservices-compose.yaml down
 ms-up:
 	docker compose -f microservices-compose.yaml up
+
+# Kubernetes
+forwardport:
+	echo "Forwarding port ..."
+	-kill -9 $$(lsof -i tcp:3333 | grep "kubectl" | awk '{print $$2}')
+	-kubectl port-forward service/auth-service-public-api -n default 3333:80
