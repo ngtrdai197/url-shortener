@@ -1,3 +1,4 @@
+import { AppController } from '@/app.controller'
 import { AuthModule } from '@/auth/auth.module'
 import { HttpExceptionFilter } from '@/common/filters/http-exception.filter'
 import { AuthGuard } from '@/common/guards/auth.guard'
@@ -41,5 +42,6 @@ import { EnvironmentModule } from './environment/environment.module'
       useClass: AuthGuard,
     },
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

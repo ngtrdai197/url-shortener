@@ -20,6 +20,6 @@ ms-up:
 
 # Kubernetes
 forwardport:
-	echo "Forwarding port ..."
-	-kill -9 $$(lsof -i tcp:3333 | grep "kubectl" | awk '{print $$2}')
-	-kubectl port-forward service/auth-service-public-api -n default 3333:80
+	@echo "Forwarding port ..."
+	@kill -9 $$(lsof -i tcp:3333 | grep "kubectl" | awk '{print $$2}') || true
+	kubectl port-forward service/auth-service-public-api -n default 3333:3000
