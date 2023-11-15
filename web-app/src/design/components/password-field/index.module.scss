@@ -21,6 +21,6 @@
     font-size: 20px;
     cursor: pointer;
     transform: translateY(-50%);
-    @include hover-opacity;
+    @include hoverOpacity;
   }
 }

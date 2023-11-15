@@ -1,6 +1,9 @@
 import React, { FormEventHandler } from 'react';
 import { Link } from 'react-router-dom';
+
 import { ThemeSwitcher } from '../../components/theme-switcher';
+
+import PATHES from '../../../brand/constants/pathes';
 
 interface AuthFormProps {
   type: 'sign-in' | 'sign-up';
@@ -32,7 +35,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type, children, onSubmit }) 
         <span className="font-medium dark:text-white">
           {type === 'sign-in' ? 'Do not have an account? ' : 'Already have an account? '}
           <span className=" text-purple-600 hover:underline dark:text-sky-500">
-            <Link to={type === 'sign-in' ? '/registration' : '/login'}>
+            <Link to={type === 'sign-in' ? PATHES.REGISTRATION_PAGE : PATHES.LOGIN_PAGE}>
               {type === 'sign-in' ? 'Register' : 'Login'}{' '}
             </Link>
           </span>

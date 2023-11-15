@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { mapModifiers } from '../../libs/components';
 import { Icon, IconShape } from '../icon';
+import { Link } from 'react-router-dom';
 
 export interface SideBarProps {
   children: React.ReactNode;
@@ -11,25 +12,40 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
   const sideBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (sideBarRef?.current) {
-      const sideBarEl = sideBarRef.current;
+    if (!sideBarRef.current) return;
 
-      sideBarEl.style.setProperty('--menu-items-width', isExpanded ? '200px' : '41px');
-    }
-  }, [isExpanded]);
+    const sideBarEl = sideBarRef.current;
+
+    sideBarEl.addEventListener('mouseenter', () => {
+      setIsExpanded(true);
+    });
+    sideBarEl.addEventListener('mouseleave', () => {
+      setIsExpanded(false);
+    });
+
+    return () => {
+      if (!sideBarEl) return;
+
+      sideBarEl.removeEventListener('mouseenter', () => {
+        setIsExpanded(true);
+      });
+      sideBarEl.removeEventListener('mouseleave', () => {
+        setIsExpanded(false);
+      });
+    };
+  }, []);
 
   return (
-    <div className={mapModifiers('c-side-bar', isExpanded && 'expanded')} ref={sideBarRef}>
-      <button
-        className="c-side-bar__button"
-        onClick={() => {
-          setIsExpanded(!isExpanded);
-        }}
-      />
-
-      <div className="c-side-bar__container">
-        <div className="c-side-bar__logo"></div>
-        <ul className="c-side-bar__items">{children}</ul>
+    <div
+      className={`${mapModifiers('c-side-bar', isExpanded && 'expanded')} hidden
+      pc:block
+      fixed top-[15%] left-0 text-white z-[1000]`}
+      ref={sideBarRef}
+    >
+      <div className="c-side-bar__container min-h-[300px] px-[15px] w-[56px] bg-dark-side-bar dark:bg-white">
+        <ul className={`c-side-bar__items top-1/2 translate-y-[-50%] bg-dark-side-bar dark:bg-white absolute`}>
+          {children}
+        </ul>
       </div>
     </div>
   );
@@ -43,12 +59,12 @@ export interface SideBarItemProps {
 }
 
 export const SideBarItem: React.FC<SideBarItemProps> = ({ icon, children, href, isActivated }) => (
-  <li className={mapModifiers('c-side-bar__item', isActivated && 'activated')}>
-    <a className={mapModifiers('c-side-bar__item-link')} href={href}>
+  <li className={`${mapModifiers('c-side-bar__item', isActivated && 'activated')} relative block`}>
+    <Link className={mapModifiers('c-side-bar__item-link')} to={href}>
       <span className="c-side-bar__icon">
         <Icon name={icon} />
       </span>
-      <span className="c-side-bar__item-name">{children}</span>
-    </a>
+      <span className="c-side-bar__item-name block overflow-hidden">{children}</span>
+    </Link>
   </li>
 );

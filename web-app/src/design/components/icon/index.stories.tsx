@@ -21,6 +21,18 @@ export const Check: Story = {
     name: 'check',
   },
 };
+export const ClearBlack: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'clear-black',
+  },
+};
+export const ClearWhite: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'clear-white',
+  },
+};
 export const EyeBlack: Story = {
   render: args => <Icon {...args} />,
   args: {
@@ -57,6 +69,27 @@ export const Notification: Story = {
   args: {
     name: 'notification',
   },
+};
+
+export const SearchBlack: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'search-black',
+  },
+};
+
+export const SearchWhite: Story = {
+  render: args => <Icon {...args} />,
+  args: {
+    name: 'search-white',
+  },
+  decorators: [
+    Story => (
+      <div style={{ background: '#cccccc' }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export const Sun: Story = {

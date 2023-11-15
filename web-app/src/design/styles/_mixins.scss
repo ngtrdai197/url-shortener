@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 @mixin pc() {
   @media (min-width: $SP-WIDTH + 1px) {
     @content;
@@ -21,7 +23,7 @@
   }
 
   @if ($lineHeightPx) {
-    line-height: ($lineHeightPx / $fzPx);
+    line-height: math.div($lineHeightPx, $fzPx);
   }
 
   @if ($letterSpacingPx) {
@@ -85,10 +87,10 @@
     cursor: pointer;
   }
 
-  @include hover-opacity;
+  @include hoverOpacity;
 }
 
-@mixin hover-opacity() {
+@mixin hoverOpacity() {
   transition: opacity 0.2s cubic-bezier(0.33, 0, 0.24, 1);
 
   &:active,

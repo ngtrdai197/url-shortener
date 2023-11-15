@@ -14,10 +14,14 @@
   }
 
   @include icon-shape('check');
+  @include icon-shape('clear-black');
+  @include icon-shape('clear-white');
   @include icon-shape('eye-black');
   @include icon-shape('eye-splash-black');
   @include icon-shape('eye-white');
   @include icon-shape('moon');
   @include icon-shape('notification');
+  @include icon-shape('search-black');
+  @include icon-shape('search-white');
   @include icon-shape('sun');
 }

@@ -7,6 +7,7 @@ import { AuthForm } from '../../../design/templates/auth-form';
 import { RegisterRequestDto } from '../../models/auth.dto';
 import { useRegisterMutation } from '../../services/users.service';
 import { TextFieldRHF } from '../../../design/components/text-field';
+import AuthPage from '../../../design/templates/auth-page';
 
 const schema = yup.object().shape({
   username: yup.string().required('User name is required').min(6, 'Username must be at least 6 characters'),
@@ -52,12 +53,14 @@ const Registration: React.FC = () => {
   };
 
   return (
-    <AuthForm type="sign-up" onSubmit={handleSubmit(onSubmit)}>
-      <TextFieldRHF control={control} name="username" label="User name" />
-      <TextFieldRHF control={control} name="fullName" label="Full name" />
-      <TextFieldRHF control={control} name="password" label="Password" />
-      <TextFieldRHF control={control} name="confirmPassword" label="Confirm password" />
-    </AuthForm>
+    <AuthPage>
+      <AuthForm type="sign-up" onSubmit={handleSubmit(onSubmit)}>
+        <TextFieldRHF control={control} name="username" label="User name" />
+        <TextFieldRHF control={control} name="fullName" label="Full name" />
+        <TextFieldRHF control={control} name="password" label="Password" />
+        <TextFieldRHF control={control} name="confirmPassword" label="Confirm password" />
+      </AuthForm>
+    </AuthPage>
   );
 };
 

@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { store } from '../src/brand/store';
 import { ActionToast } from '../src/design/components/action-toast';
-
+import { ThemeModeProvider } from '../src/brand/contexts/theme-mode';
 import '../src/design/styles/index.scss';
 
 export const preview: Preview = {
@@ -27,7 +27,9 @@ export const decorators = [
       <ActionToast />
       <BrowserRouter>
         <Provider store={store}>
-          <Story />
+          <ThemeModeProvider>
+            <Story />
+          </ThemeModeProvider>
         </Provider>
       </BrowserRouter>
     </React.StrictMode>

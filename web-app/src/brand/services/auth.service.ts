@@ -11,7 +11,9 @@ export const authAPI = createApi({
   baseQuery: axiosBaseQuery(),
   endpoints: builder => ({
     login: builder.mutation<AuthenticateResponseDto, LoginRequestDto>({
-      query: req => ({ url: '/login', method: HTTP_METHOD.POST, data: req, isAuth: true }),
+      query: req => ({
+        options: { url: '/login', method: HTTP_METHOD.POST, data: req, isAuth: true, withCredentials: true },
+      }),
       transformResponse: (res: HttpObject<AuthenticateResponseDto>) => {
         const { data, resultCode } = plainToInstance(HttpObject<AuthenticateResponseDto>, res);
         const responseInstance = plainToInstance(AuthenticateResponseDto, data);

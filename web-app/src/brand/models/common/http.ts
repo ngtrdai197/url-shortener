@@ -1,5 +1,16 @@
 import { Expose } from 'class-transformer';
 
+export class IHttpDataErrorResponse {
+  message!: string;
+
+  path!: string;
+
+  @Expose({ name: 'status_code' })
+  statusCode!: number;
+
+  timestamp!: string;
+}
+
 export interface IHttpResponse<T> {
   resultCode: number;
   message: string;
